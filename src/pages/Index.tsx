@@ -8,8 +8,10 @@ import BooksSection from "@/components/BooksSection";
 import PublicationsSection from "@/components/PublicationsSection";
 import BlogSection from "@/components/BlogSection";
 import FooterSection from "@/components/FooterSection";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Index = () => {
+  useSiteSettings();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
