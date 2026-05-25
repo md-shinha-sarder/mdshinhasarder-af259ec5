@@ -1,6 +1,6 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
-const FEED = "https://www.mdshinhasarder.com/atom.xml?redirect=false&start-index=1&max-results=500";
+const FEED = "https://shinhaauthor.blogspot.com/atom.xml?redirect=false&start-index=1&max-results=500";
 
 function pick(xml: string, tag: string, attr?: string): string | null {
   if (attr) {
