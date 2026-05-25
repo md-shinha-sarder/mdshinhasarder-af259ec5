@@ -7,6 +7,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Auth from "./pages/Auth.tsx";
+import PostDetail from "./pages/PostDetail.tsx";
+import AllPosts from "./pages/AllPosts.tsx";
 import AdminLayout from "./components/admin/AdminLayout.tsx";
 import Dashboard from "./pages/admin/Dashboard.tsx";
 import PagesAdmin from "./pages/admin/PagesAdmin.tsx";
@@ -26,6 +28,8 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/posts" element={<AllPosts />} />
+            <Route path="/post/:slug" element={<PostDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
