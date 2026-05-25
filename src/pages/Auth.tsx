@@ -7,15 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+const ADMIN_EMAIL = "shinhasarder2343@gmail.com";
+const ADMIN_PASS = "shinha9900";
+
 const Auth = () => {
   const nav = useNavigate();
   const { user, loading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [password, setPassword] = useState(ADMIN_PASS);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { if (!loading && user) nav("/admin"); }, [user, loading, nav]);
+
+  const trySignIn = async (em: string, pw: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw });
+    return error;
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,23 +32,28 @@ const Auth = () => {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/admin` } });
         if (error) throw error;
-        toast.success("Account created. You can sign in now.");
-        setMode("signin");
+        const signInErr = await trySignIn(email, password);
+        if (signInErr) { toast.success("Account created. Please sign in."); setMode("signin"); }
+        else { toast.success("Welcome!"); nav("/admin"); }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        let err = await trySignIn(email, password);
+        if (err && email === ADMIN_EMAIL && password === ADMIN_PASS) {
+          const { error: suErr } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/admin` } });
+          if (suErr) throw suErr;
+          err = await trySignIn(email, password);
+        }
+        if (err) throw err;
         nav("/admin");
       }
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally { setBusy(false); }
+    } catch (err: any) { toast.error(err.message); }
+    finally { setBusy(false); }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <form onSubmit={submit} className="w-full max-w-md bg-gradient-card rounded-2xl p-8 border border-border shadow-card space-y-5">
-        <h1 className="text-2xl font-serif font-bold text-gradient-gold">{mode === "signin" ? "Admin Sign In" : "Create Admin Account"}</h1>
-        <p className="text-sm text-muted-foreground">First user becomes admin automatically.</p>
+        <h1 className="text-2xl font-serif font-bold text-gradient-gold">{mode === "signin" ? "Admin Sign In" : "Create Account"}</h1>
+        <p className="text-sm text-muted-foreground">Pre-filled with admin credentials — just click Sign In.</p>
         <div className="space-y-2">
           <Label>Email</Label>
           <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
