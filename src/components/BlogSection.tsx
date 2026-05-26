@@ -44,7 +44,7 @@ const BlogSection = () => {
                     ))}
                   </div>
                   <h4 className="font-serif font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">{p.title}</h4>
-                  <p className="text-xs text-muted-foreground mb-4 line-clamp-2 flex-1">{p.excerpt}</p>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-2 flex-1 text-justify">{p.excerpt}</p>
                   <div className="flex items-center justify-between mt-auto">
                     <span className="text-xs text-muted-foreground flex items-center gap-1"><Calendar size={12} /> {fmt(p.published)}</span>
                     <ArrowRight size={14} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
