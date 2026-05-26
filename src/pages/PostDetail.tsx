@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, Facebook, Twitter, Linkedin, Link as LinkIcon, MessageCircle } from "lucide-react";
@@ -14,6 +15,8 @@ const PostDetail = () => {
   const { posts } = usePosts();
   const url = typeof window !== "undefined" ? window.location.href : "";
   const related = posts.filter((p) => p.slug !== slug).slice(0, 3);
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [slug]);
 
   const share = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
@@ -82,7 +85,7 @@ const PostDetail = () => {
                 <img src={post.image} alt={post.title} className="w-full rounded-xl mb-8 border border-border" />
               )}
               <div
-                className="prose prose-invert max-w-none prose-headings:font-serif prose-a:text-primary prose-img:rounded-lg prose-img:mx-auto"
+                className="prose prose-invert max-w-none prose-headings:font-serif prose-a:text-primary prose-img:rounded-lg prose-img:mx-auto text-justify [&_p]:text-justify [&_li]:text-justify"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
