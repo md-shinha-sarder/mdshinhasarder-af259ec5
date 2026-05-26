@@ -14,32 +14,42 @@ export interface BlogPost {
   tags: string[];
 }
 
-let cache: BlogPost[] | null = null;
-let inflight: Promise<BlogPost[]> | null = null;
+const cache: Record<string, BlogPost[]> = {};
+const inflight: Record<string, Promise<BlogPost[]>> = {};
 
-async function load(): Promise<BlogPost[]> {
-  if (cache) return cache;
-  if (inflight) return inflight;
-  inflight = (async () => {
-    const { data, error } = await supabase.functions.invoke("fetch-posts");
+async function load(type: "posts" | "pages"): Promise<BlogPost[]> {
+  if (cache[type]) return cache[type];
+  if (inflight[type]) return inflight[type];
+  inflight[type] = (async () => {
+    const { data, error } = await supabase.functions.invoke(`fetch-posts?type=${type}`);
     if (error) throw error;
-    cache = (data?.posts ?? []) as BlogPost[];
-    return cache;
+    cache[type] = (data?.posts ?? data?.items ?? []) as BlogPost[];
+    return cache[type];
   })();
-  return inflight;
+  return inflight[type];
 }
 
 export const usePosts = () => {
-  const [posts, setPosts] = useState<BlogPost[]>(cache ?? []);
-  const [loading, setLoading] = useState(!cache);
+  const [posts, setPosts] = useState<BlogPost[]>(cache.posts ?? []);
+  const [loading, setLoading] = useState(!cache.posts);
   useEffect(() => {
-    load().then((p) => { setPosts(p); setLoading(false); }).catch(() => setLoading(false));
+    load("posts").then((p) => { setPosts(p); setLoading(false); }).catch(() => setLoading(false));
   }, []);
   return { posts, loading };
 };
 
+export const usePages = () => {
+  const [pages, setPages] = useState<BlogPost[]>(cache.pages ?? []);
+  const [loading, setLoading] = useState(!cache.pages);
+  useEffect(() => {
+    load("pages").then((p) => { setPages(p); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
+  return { pages, loading };
+};
+
 export const usePost = (slug?: string) => {
   const { posts, loading } = usePosts();
-  const post = posts.find((p) => p.slug === slug);
+  const { pages } = usePages();
+  const post = posts.find((p) => p.slug === slug) || pages.find((p) => p.slug === slug);
   return { post, loading };
 };
