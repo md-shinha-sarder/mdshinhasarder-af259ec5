@@ -1,4 +1,4 @@
-import { MapPin, Calendar, Mail, FileText, ExternalLink, BadgeCheck } from "lucide-react";
+import { MapPin, Calendar, Mail, FileText, ExternalLink, BadgeCheck, ArrowDown } from "lucide-react";
 import heroPortrait from "@/assets/hero-portrait.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
 
@@ -7,18 +7,22 @@ const HeroSection = () => {
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${heroBg})` }} />
       <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+      <div className="absolute top-1/3 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
 
-      <div className="relative z-10 container mx-auto px-6 pt-24 pb-16 flex flex-col lg:flex-row items-center gap-12">
+      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 flex flex-col lg:flex-row items-center gap-12">
         <div className="flex-1 text-center lg:text-left animate-fade-up">
-          <p className="text-primary font-medium tracking-widest uppercase text-sm mb-4">Welcome</p>
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-bold leading-tight mb-6 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+          <span className="inline-flex items-center gap-2 text-xs text-primary font-medium tracking-widest uppercase mb-4 px-3 py-1 rounded-full border border-primary/30 bg-primary/5">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Welcome to my world
+          </span>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold leading-tight mb-3 flex flex-wrap items-center justify-center lg:justify-start gap-2">
             <span>MD. Shinha <span className="text-gradient-gold">Sarder</span></span>
             <span title="Verified" className="inline-flex items-center justify-center">
-              <BadgeCheck className="w-8 h-8 sm:w-10 sm:h-10 text-primary fill-primary/20" aria-label="Verified" />
+              <BadgeCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary fill-primary/20" aria-label="Verified" />
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-xl">
-            Software Developer · Entrepreneur · Musical Artist · Author · Researcher
+          <p className="text-base sm:text-lg text-muted-foreground mb-6 max-w-xl text-justify lg:text-left mx-auto lg:mx-0">
+            Software Developer · Entrepreneur · Musical Artist · Author · Researcher — Founder &amp; CEO of IT Tech BD and Biostar TV World.
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center lg:justify-start text-sm text-muted-foreground mb-8">
@@ -43,15 +47,20 @@ const HeroSection = () => {
 
         <div className="flex-shrink-0 animate-fade-in">
           <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-gold rounded-full opacity-30 blur-xl animate-pulse-glow" />
+            <div className="absolute -inset-2 bg-gradient-gold rounded-full opacity-40 blur-2xl animate-pulse-glow" />
+            <div className="absolute -inset-0.5 bg-gradient-gold rounded-full opacity-60" />
             <img src={heroPortrait} alt="MD. Shinha Sarder" width={320} height={400}
-              className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover border-4 border-primary/30" />
-            <span title="Verified" className="absolute bottom-4 right-4 bg-background rounded-full p-1 border-2 border-primary shadow-gold">
+              className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full object-cover border-4 border-background" />
+            <span title="Verified" className="absolute bottom-4 right-4 bg-background rounded-full p-1.5 border-2 border-primary shadow-gold">
               <BadgeCheck className="w-7 h-7 text-primary fill-primary/30" />
             </span>
           </div>
         </div>
       </div>
+
+      <a href="#about" aria-label="Scroll down" className="absolute bottom-6 left-1/2 -translate-x-1/2 text-muted-foreground hover:text-primary transition-colors animate-bounce">
+        <ArrowDown size={22} />
+      </a>
     </section>
   );
 };

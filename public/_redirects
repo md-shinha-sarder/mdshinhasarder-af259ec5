@@ -1,1 +1,4 @@
+/sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=sitemap 200
+/rss.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
+/atom.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
 /* /index.html 200
