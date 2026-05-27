@@ -33,7 +33,7 @@ const FooterSection = () => (
           <h4 className="font-serif font-semibold mb-4 text-foreground">Contact</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone size={14} className="text-primary" /> <a href="https://wa.me/8801576716992" className="hover:text-primary">+880 1576-716992</a></li>
-            <li className="flex items-center gap-2"><Mail size={14} className="text-primary" /> <a href="mailto:contact@shinhasarder.com" className="hover:text-primary">contact@shinhasarder.com</a></li>
+            <li className="flex items-center gap-2"><Mail size={14} className="text-primary" /> <a href="mailto:Shinhasarder2343@gmail.com" className="hover:text-primary break-all">Shinhasarder2343@gmail.com</a></li>
             <li className="flex items-center gap-2"><MapPin size={14} className="text-primary" /> Khulna, Bangladesh</li>
           </ul>
         </div>
