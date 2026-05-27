@@ -1,6 +1,9 @@
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
-const BASE = "https://mdshinhasarder.lovable.app";
+const BASE = "https://mdshinhasarder.com";
 const FEED = "https://shinhaauthor.blogspot.com/feeds/posts/default?max-results=500";
 
 function pickAll(xml: string, tag: string) {
@@ -35,6 +38,7 @@ Deno.serve(async (req) => {
   const type = new URL(req.url).searchParams.get("type") || "sitemap";
   try {
     const entries = await getEntries();
+
     if (type === "rss") {
       const items = entries.map((e) => `
   <item>
@@ -58,7 +62,37 @@ Deno.serve(async (req) => {
       return new Response(rss, { headers: { ...corsHeaders, "Content-Type": "application/rss+xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
     }
 
-    const staticPaths = ["/", "/posts", "/#about", "/#skills", "/#projects", "/#music", "/#books", "/#publications", "/#blog"];
+    if (type === "news") {
+      const cutoff = Date.now() - 1000 * 60 * 60 * 24 * 2;
+      const fresh = entries.filter((e) => new Date(e.published || 0).getTime() > cutoff);
+      const items = fresh.map((e) => `
+  <url>
+    <loc>${BASE}/post/${e.slug}</loc>
+    <news:news>
+      <news:publication><news:name>MD. Shinha Sarder</news:name><news:language>en</news:language></news:publication>
+      <news:publication_date>${new Date(e.published || Date.now()).toISOString()}</news:publication_date>
+      <news:title>${xmlEsc(e.title)}</news:title>
+    </news:news>
+  </url>`).join("");
+      const news = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">${items}
+</urlset>`;
+      return new Response(news, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    if (type === "images") {
+      const items = entries.filter((e) => e.image).map((e) => `
+  <url>
+    <loc>${BASE}/post/${e.slug}</loc>
+    <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
+  </url>`).join("");
+      const imgs = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${items}
+</urlset>`;
+      return new Response(imgs, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    const staticPaths = ["/", "/posts", "/#about", "/#skills", "/#projects", "/#services", "/#gallery", "/#music", "/#books", "/#publications", "/#blog"];
     const urls = [
       ...staticPaths.map((p) => `<url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`),
       ...entries.map((e) => `<url><loc>${BASE}/post/${e.slug}</loc><lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`),
