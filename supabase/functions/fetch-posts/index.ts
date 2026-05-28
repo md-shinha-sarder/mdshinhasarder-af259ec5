@@ -44,7 +44,18 @@ function parseEntries(xml: string) {
       return src ? `<img src="${upscale(src[1])}" loading="lazy" />` : "";
     });
 
-    const excerpt = strip(content).slice(0, 220);
+    const plain = strip(content)
+      .replace(/https?:\/\/\S+/g, "")
+      .replace(/\[[^\]]*\]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    let excerpt = plain.slice(0, 200);
+    if (plain.length > 200) {
+      const cut = excerpt.lastIndexOf(" ");
+      if (cut > 80) excerpt = excerpt.slice(0, cut);
+      excerpt += "…";
+    }
+    if (!excerpt) excerpt = title;
     const linkRe = /<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i;
     const lm = e.match(linkRe);
     const url = lm ? lm[1] : "";

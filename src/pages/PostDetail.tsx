@@ -26,27 +26,34 @@ const PostDetail = () => {
   };
   const copy = () => { navigator.clipboard.writeText(url); toast.success("Link copied"); };
 
+  const cleanDesc = (post?.excerpt || "")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160) || (post?.title ? `${post.title} — Read the full article by MD. Shinha Sarder.` : "");
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       {post && (
         <Helmet>
           <title>{post.title} | MD. Shinha Sarder</title>
-          <meta name="description" content={post.excerpt} />
+          <meta name="description" content={cleanDesc} />
           <link rel="canonical" href={url} />
           <meta property="og:title" content={post.title} />
-          <meta property="og:description" content={post.excerpt} />
+          <meta property="og:description" content={cleanDesc} />
           <meta property="og:type" content="article" />
           <meta property="og:url" content={url} />
           {post.image && <meta property="og:image" content={post.image} />}
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={post.title} />
-          <meta name="twitter:description" content={post.excerpt} />
+          <meta name="twitter:description" content={cleanDesc} />
           {post.image && <meta name="twitter:image" content={post.image} />}
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
             headline: post.title,
+            description: cleanDesc,
             image: post.image ? [post.image] : undefined,
             datePublished: post.published,
             dateModified: post.updated,

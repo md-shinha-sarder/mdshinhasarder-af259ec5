@@ -1,3 +1,6 @@
+https://mdshinhasarder.lovable.app/* https://mdshinhasarder.com/:splat 301!
+https://www.mdshinhasarder.com/* https://mdshinhasarder.com/:splat 301!
+
 /sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=sitemap 200
 /rss.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
 /atom.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
