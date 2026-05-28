@@ -95,10 +95,15 @@ Deno.serve(async (req) => {
     const staticPaths = ["/", "/posts", "/#about", "/#skills", "/#projects", "/#services", "/#gallery", "/#music", "/#books", "/#publications", "/#blog"];
     const urls = [
       ...staticPaths.map((p) => `<url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`),
-      ...entries.map((e) => `<url><loc>${BASE}/post/${e.slug}</loc><lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`),
+      ...entries.map((e) => `<url>
+    <loc>${BASE}/post/${e.slug}</loc>
+    <lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>${e.image ? `\n    <image:image><image:loc>${xmlEsc(e.image)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>` : ""}
+  </url>`),
     ].join("\n  ");
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   ${urls}
 </urlset>`;
     return new Response(sitemap, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
