@@ -50,8 +50,8 @@ Deno.serve(async (req) => {
       const items = entries.map((e) => `
   <item>
     <title>${xmlEsc(e.title)}</title>
-    <link>${BASE}/post/${e.slug}</link>
-    <guid isPermaLink="true">${BASE}/post/${e.slug}</guid>
+    <link>${BASE}${postPath(e)}</link>
+    <guid isPermaLink="true">${BASE}${postPath(e)}</guid>
     <pubDate>${new Date(e.published || Date.now()).toUTCString()}</pubDate>
     <description>${xmlEsc(e.excerpt)}</description>${e.image ? `\n    <enclosure url="${xmlEsc(e.image)}" type="image/jpeg" />` : ""}
   </item>`).join("");
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
       const fresh = entries.filter((e) => new Date(e.published || 0).getTime() > cutoff);
       const items = fresh.map((e) => `
   <url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <news:news>
       <news:publication><news:name>MD. Shinha Sarder</news:name><news:language>en</news:language></news:publication>
       <news:publication_date>${new Date(e.published || Date.now()).toISOString()}</news:publication_date>
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
     if (type === "images") {
       const items = entries.filter((e) => e.image).map((e) => `
   <url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
   </url>`).join("");
       const imgs = `<?xml version="1.0" encoding="UTF-8"?>
@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     const urls = [
       ...staticPaths.map((p) => `<url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`),
       ...entries.map((e) => `<url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>${e.image ? `\n    <image:image><image:loc>${xmlEsc(e.image)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>` : ""}
