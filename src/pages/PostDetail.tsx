@@ -115,7 +115,7 @@ const PostDetail = () => {
                   <h3 className="font-serif text-2xl mb-6">Related Posts</h3>
                   <div className="grid sm:grid-cols-3 gap-4">
                     {related.map((r) => (
-                      <Link key={r.id} to={`/post/${r.slug}`} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
+                      <Link key={r.id} to={postPath(r)} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
                         {r.image && <img src={r.image} alt={r.title} loading="lazy" className="w-full aspect-video object-cover" />}
                         <div className="p-3">
                           <h4 className="text-sm font-serif font-semibold line-clamp-2 group-hover:text-primary transition-colors">{r.title}</h4>
