@@ -30,7 +30,7 @@ const BlogSection = () => {
             {items.map((p) => (
               <Link
                 key={p.id}
-                to={`/post/${p.slug}`}
+                to={postPath(p)}
                 className="group bg-gradient-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all hover:-translate-y-1 duration-300 flex flex-col"
               >
                 {p.image && (
