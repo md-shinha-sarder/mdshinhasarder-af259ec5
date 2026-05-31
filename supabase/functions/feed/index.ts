@@ -17,6 +17,13 @@ function dec(s: string) { return s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").r
 function strip(s: string) { return dec(s).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(); }
 function xmlEsc(s: string) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
 function slugOf(u: string) { try { const p = new URL(u).pathname; return p.replace(/\/$/, "").split("/").pop()?.replace(/\.html?$/, "") || "post"; } catch { return "post"; } }
+function postPath(e: { slug: string; published: string; url?: string }) {
+  let y = "", m = "";
+  if (e.url) { const mm = e.url.match(/\/(\d{4})\/(\d{2})\//); if (mm) { y = mm[1]; m = mm[2]; } }
+  if (!y && e.published) { const d = new Date(e.published); if (!isNaN(d.getTime())) { y = String(d.getFullYear()); m = String(d.getMonth() + 1).padStart(2, "0"); } }
+  if (!y) { const d = new Date(); y = String(d.getFullYear()); m = String(d.getMonth() + 1).padStart(2, "0"); }
+  return `/${y}/${m}/${e.slug}.html`;
+}
 
 async function getEntries() {
   const xml = await fetch(FEED).then((r) => r.text());
@@ -29,7 +36,7 @@ async function getEntries() {
     const lm = e.match(/<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i);
     const url = lm ? lm[1] : "";
     const img = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null };
+    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url };
   });
 }
 
