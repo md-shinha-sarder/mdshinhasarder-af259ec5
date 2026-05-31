@@ -4,15 +4,18 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, Facebook, Twitter, Linkedin, Link as LinkIcon, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
-import { usePost, usePosts } from "@/hooks/usePosts";
+import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
 import { toast } from "sonner";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); } catch { return ""; } };
 
 const PostDetail = () => {
-  const { slug } = useParams();
-  const { post, loading } = usePost(slug);
-  const { posts } = usePosts();
+  const params = useParams();
+  const rawSlug = (params.slug || "").replace(/\.html?$/, "");
+  const { posts, loading } = usePosts();
+  const post = posts.find((p) => p.slug === rawSlug);
+  const slug = rawSlug;
   const url = typeof window !== "undefined" ? window.location.href : "";
   const related = posts.filter((p) => p.slug !== slug).slice(0, 3);
 
