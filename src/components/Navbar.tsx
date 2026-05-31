@@ -31,6 +31,11 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   const linkHref = (href: string) => (onHome ? href : `/${href}`);
 
   const onSearch = (e: React.FormEvent) => {
@@ -43,70 +48,77 @@ const Navbar = () => {
   };
 
   const Brand = (
-    <Link to="/" className="flex items-center gap-2">
-      <img src={siteLogo} alt="MD. Shinha Sarder logo" className="w-9 h-9 rounded-full object-cover shadow-gold" />
-      <span className="text-base sm:text-lg font-serif font-bold text-gradient-gold tracking-tight whitespace-nowrap">MD. Shinha Sarder</span>
-      <BadgeCheck className="w-4 h-4 text-primary fill-primary/20" aria-label="Verified" />
+    <Link to="/" className="flex items-center gap-1.5 min-w-0" onClick={() => setOpen(false)}>
+      <img src={siteLogo} alt="MD. Shinha Sarder logo" className="w-7 h-7 rounded-full object-cover shadow-gold flex-shrink-0" />
+      <span className="text-xs sm:text-sm font-serif font-bold text-gradient-gold tracking-tight whitespace-nowrap">MD. Shinha Sarder</span>
+      <BadgeCheck className="w-3.5 h-3.5 text-primary fill-primary/20 flex-shrink-0" aria-label="Verified" />
     </Link>
   );
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "glass-card shadow-card" : "bg-background/40 backdrop-blur-sm"}`}>
-      <div className="container mx-auto px-6 py-3">
-        <div className="hidden lg:flex items-center justify-between gap-6">
-          <div className="flex items-center gap-5 min-w-0">
-            {Brand}
-            <div className="flex items-center gap-4 ml-4">
-              {navLinks.map((l) => (
-                <a key={l.href} href={linkHref(l.href)} className="text-xs text-muted-foreground hover:text-primary transition-colors relative after:absolute after:left-0 after:bottom-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full">
-                  {l.label}
-                </a>
-              ))}
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "glass-card shadow-card" : "bg-background/40 backdrop-blur-sm"}`}>
+        <div className="container mx-auto px-4 sm:px-6 py-3">
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-2">
+            <button onClick={() => setOpen(!open)} className="text-foreground p-1.5 hover:text-primary transition-colors" aria-label="Toggle menu">
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+
+            <div className="flex justify-center min-w-0">
+              {searchOpen ? (
+                <form onSubmit={onSearch} className="w-full max-w-md">
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      autoFocus
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      placeholder="Search site..."
+                      aria-label="Search site"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-card/80 border border-border rounded-full focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </form>
+              ) : (
+                Brand
+              )}
             </div>
+
+            <button onClick={() => setSearchOpen(!searchOpen)} className="text-foreground p-1.5 hover:text-primary transition-colors" aria-label="Toggle search">
+              {searchOpen ? <X size={20} /> : <Search size={20} />}
+            </button>
           </div>
-          <form onSubmit={onSearch} className="flex">
-            <div className="relative w-[240px]">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search site..."
-                aria-label="Search site"
-                className="w-full pl-9 pr-3 py-2 text-xs bg-card/60 border border-border rounded-full focus:outline-none focus:border-primary"
-              />
-            </div>
-          </form>
         </div>
+      </nav>
 
-        <div className="lg:hidden grid grid-cols-3 items-center">
-          <button onClick={() => setOpen(!open)} className="text-foreground justify-self-start" aria-label="Toggle menu">
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
-          <div className="justify-self-center">{Brand}</div>
-          <button onClick={() => setSearchOpen(!searchOpen)} className="text-foreground justify-self-end" aria-label="Toggle search">
-            {searchOpen ? <X size={20} /> : <Search size={20} />}
+      <div
+        className={`fixed inset-0 z-40 bg-background/70 backdrop-blur-sm transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={() => setOpen(false)}
+      />
+      <aside
+        className={`fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[85vw] glass-card border-r border-border shadow-card transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}
+        aria-hidden={!open}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <span className="text-sm font-serif font-bold text-gradient-gold">Menu</span>
+          <button onClick={() => setOpen(false)} className="text-foreground hover:text-primary" aria-label="Close menu">
+            <X size={20} />
           </button>
         </div>
-      </div>
-
-      {searchOpen && (
-        <div className="lg:hidden glass-card border-t border-border px-6 py-3">
-          <form onSubmit={onSearch}>
-            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search site..." className="w-full px-3 py-2 text-sm bg-card border border-border rounded-lg focus:outline-none focus:border-primary" />
-          </form>
-        </div>
-      )}
-
-      {open && (
-        <div className="lg:hidden glass-card border-t border-border px-6 pb-4">
+        <nav className="flex flex-col py-3">
           {navLinks.map((l) => (
-            <a key={l.href} href={linkHref(l.href)} onClick={() => setOpen(false)} className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a
+              key={l.href}
+              href={linkHref(l.href)}
+              onClick={() => setOpen(false)}
+              className="px-6 py-3 text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 border-l-2 border-transparent hover:border-primary transition-all"
+            >
               {l.label}
             </a>
           ))}
-        </div>
-      )}
-    </nav>
+        </nav>
+      </aside>
+    </>
   );
 };
 
