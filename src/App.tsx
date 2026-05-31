@@ -38,6 +38,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Index />} />
         <Route path="/posts" element={<AllPosts />} />
         <Route path="/post/:slug" element={<PostDetail />} />
+        <Route path="/:year/:month/:slug" element={<PostDetail />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

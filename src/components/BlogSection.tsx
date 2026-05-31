@@ -1,6 +1,7 @@
 import { ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
 
 const fmt = (d: string) => {
   try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }
@@ -29,7 +30,7 @@ const BlogSection = () => {
             {items.map((p) => (
               <Link
                 key={p.id}
-                to={`/post/${p.slug}`}
+                to={postPath(p)}
                 className="group bg-gradient-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all hover:-translate-y-1 duration-300 flex flex-col"
               >
                 {p.image && (

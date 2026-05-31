@@ -4,15 +4,18 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, Facebook, Twitter, Linkedin, Link as LinkIcon, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
-import { usePost, usePosts } from "@/hooks/usePosts";
+import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
 import { toast } from "sonner";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); } catch { return ""; } };
 
 const PostDetail = () => {
-  const { slug } = useParams();
-  const { post, loading } = usePost(slug);
-  const { posts } = usePosts();
+  const params = useParams();
+  const rawSlug = (params.slug || "").replace(/\.html?$/, "");
+  const { posts, loading } = usePosts();
+  const post = posts.find((p) => p.slug === rawSlug);
+  const slug = rawSlug;
   const url = typeof window !== "undefined" ? window.location.href : "";
   const related = posts.filter((p) => p.slug !== slug).slice(0, 3);
 
@@ -112,7 +115,7 @@ const PostDetail = () => {
                   <h3 className="font-serif text-2xl mb-6">Related Posts</h3>
                   <div className="grid sm:grid-cols-3 gap-4">
                     {related.map((r) => (
-                      <Link key={r.id} to={`/post/${r.slug}`} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
+                      <Link key={r.id} to={postPath(r)} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
                         {r.image && <img src={r.image} alt={r.title} loading="lazy" className="w-full aspect-video object-cover" />}
                         <div className="p-3">
                           <h4 className="text-sm font-serif font-semibold line-clamp-2 group-hover:text-primary transition-colors">{r.title}</h4>

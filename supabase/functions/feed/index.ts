@@ -17,6 +17,13 @@ function dec(s: string) { return s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").r
 function strip(s: string) { return dec(s).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(); }
 function xmlEsc(s: string) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
 function slugOf(u: string) { try { const p = new URL(u).pathname; return p.replace(/\/$/, "").split("/").pop()?.replace(/\.html?$/, "") || "post"; } catch { return "post"; } }
+function postPath(e: { slug: string; published: string; url?: string }) {
+  let y = "", m = "";
+  if (e.url) { const mm = e.url.match(/\/(\d{4})\/(\d{2})\//); if (mm) { y = mm[1]; m = mm[2]; } }
+  if (!y && e.published) { const d = new Date(e.published); if (!isNaN(d.getTime())) { y = String(d.getFullYear()); m = String(d.getMonth() + 1).padStart(2, "0"); } }
+  if (!y) { const d = new Date(); y = String(d.getFullYear()); m = String(d.getMonth() + 1).padStart(2, "0"); }
+  return `/${y}/${m}/${e.slug}.html`;
+}
 
 async function getEntries() {
   const xml = await fetch(FEED).then((r) => r.text());
@@ -29,7 +36,7 @@ async function getEntries() {
     const lm = e.match(/<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i);
     const url = lm ? lm[1] : "";
     const img = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null };
+    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url };
   });
 }
 
@@ -43,8 +50,8 @@ Deno.serve(async (req) => {
       const items = entries.map((e) => `
   <item>
     <title>${xmlEsc(e.title)}</title>
-    <link>${BASE}/post/${e.slug}</link>
-    <guid isPermaLink="true">${BASE}/post/${e.slug}</guid>
+    <link>${BASE}${postPath(e)}</link>
+    <guid isPermaLink="true">${BASE}${postPath(e)}</guid>
     <pubDate>${new Date(e.published || Date.now()).toUTCString()}</pubDate>
     <description>${xmlEsc(e.excerpt)}</description>${e.image ? `\n    <enclosure url="${xmlEsc(e.image)}" type="image/jpeg" />` : ""}
   </item>`).join("");
@@ -67,7 +74,7 @@ Deno.serve(async (req) => {
       const fresh = entries.filter((e) => new Date(e.published || 0).getTime() > cutoff);
       const items = fresh.map((e) => `
   <url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <news:news>
       <news:publication><news:name>MD. Shinha Sarder</news:name><news:language>en</news:language></news:publication>
       <news:publication_date>${new Date(e.published || Date.now()).toISOString()}</news:publication_date>
@@ -83,7 +90,7 @@ Deno.serve(async (req) => {
     if (type === "images") {
       const items = entries.filter((e) => e.image).map((e) => `
   <url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
   </url>`).join("");
       const imgs = `<?xml version="1.0" encoding="UTF-8"?>
@@ -96,7 +103,7 @@ Deno.serve(async (req) => {
     const urls = [
       ...staticPaths.map((p) => `<url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`),
       ...entries.map((e) => `<url>
-    <loc>${BASE}/post/${e.slug}</loc>
+    <loc>${BASE}${postPath(e)}</loc>
     <lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>${e.image ? `\n    <image:image><image:loc>${xmlEsc(e.image)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>` : ""}

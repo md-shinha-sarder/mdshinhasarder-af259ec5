@@ -5,6 +5,7 @@ import { ArrowLeft, Calendar, Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch { return ""; } };
 
@@ -50,7 +51,7 @@ const AllPosts = () => {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((p) => (
-                <Link key={p.id} to={`/post/${p.slug}`} className="group bg-gradient-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all hover:-translate-y-1 duration-300 flex flex-col">
+                <Link key={p.id} to={postPath(p)} className="group bg-gradient-card rounded-xl overflow-hidden border border-border hover:border-primary/40 transition-all hover:-translate-y-1 duration-300 flex flex-col">
                   {p.image && <div className="aspect-[16/10] overflow-hidden bg-secondary"><img src={p.image} alt={p.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>}
                   <div className="p-5 flex-1 flex flex-col">
                     <div className="flex flex-wrap gap-2 mb-3">{p.tags.slice(0, 2).map((t) => <span key={t} className="text-[10px] uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">{t}</span>)}</div>
