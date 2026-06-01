@@ -47,6 +47,8 @@ function parseEntries(xml: string) {
     const plain = strip(content)
       .replace(/https?:\/\/\S+/g, "")
       .replace(/\[[^\]]*\]/g, "")
+      .replace(/\(\s*\)/g, "")
+      .replace(/[•·●▪►»]/g, "")
       .replace(/\s+/g, " ")
       .trim();
     let excerpt = plain.slice(0, 200);
@@ -55,7 +57,10 @@ function parseEntries(xml: string) {
       if (cut > 80) excerpt = excerpt.slice(0, cut);
       excerpt += "…";
     }
-    if (!excerpt) excerpt = title;
+    if (!excerpt || excerpt.length < 30) {
+      excerpt = title ? `${title} — Read the full article by MD. Shinha Sarder.` : "Read the full article by MD. Shinha Sarder.";
+    }
+
     const linkRe = /<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i;
     const lm = e.match(linkRe);
     const url = lm ? lm[1] : "";
