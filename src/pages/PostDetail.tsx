@@ -29,11 +29,25 @@ const PostDetail = () => {
   };
   const copy = () => { navigator.clipboard.writeText(url); toast.success("Link copied"); };
 
-  const cleanDesc = (post?.excerpt || "")
-    .replace(/https?:\/\/\S+/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 160) || (post?.title ? `${post.title} — Read the full article by MD. Shinha Sarder.` : "");
+  const stripHtml = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+  const buildDesc = () => {
+    const sources = [post?.excerpt || "", stripHtml(post?.content || "")];
+    for (const raw of sources) {
+      const clean = raw
+        .replace(/https?:\/\/\S+/g, "")
+        .replace(/\[[^\]]*\]/g, "")
+        .replace(/[\r\n\t]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (clean.length >= 60) {
+        const slice = clean.slice(0, 160);
+        const cut = slice.lastIndexOf(" ");
+        return (cut > 80 ? slice.slice(0, cut) : slice).trim() + (clean.length > 160 ? "…" : "");
+      }
+    }
+    return post?.title ? `${post.title} — Read the full article by MD. Shinha Sarder.` : "";
+  };
+  const cleanDesc = buildDesc();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -52,18 +66,28 @@ const PostDetail = () => {
           <meta name="twitter:title" content={post.title} />
           <meta name="twitter:description" content={cleanDesc} />
           {post.image && <meta name="twitter:image" content={post.image} />}
+          <meta property="article:published_time" content={post.published} />
+          <meta property="article:modified_time" content={post.updated} />
+          <meta property="article:author" content="MD. Shinha Sarder" />
+          {post.tags.map((t) => <meta key={t} property="article:tag" content={t} />)}
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
-            headline: post.title,
+            "@type": "NewsArticle",
+            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            headline: post.title.slice(0, 110),
             description: cleanDesc,
             image: post.image ? [post.image] : undefined,
             datePublished: post.published,
-            dateModified: post.updated,
-            author: { "@type": "Person", name: "MD. Shinha Sarder" },
+            dateModified: post.updated || post.published,
+            author: { "@type": "Person", name: "MD. Shinha Sarder", url: "https://mdshinhasarder.com/" },
+            publisher: { "@type": "Organization", name: "MD. Shinha Sarder", logo: { "@type": "ImageObject", url: "https://mdshinhasarder.com/favicon.ico" } },
+            isPartOf: { "@type": "Product", productID: "CAowrcq9DA:openaccess" },
+            isAccessibleForFree: true,
+            keywords: post.tags.join(", "),
           })}</script>
         </Helmet>
       )}
+
 
       <article className="pt-32 pb-16">
         <div className="container mx-auto px-6 max-w-3xl">

@@ -2,8 +2,10 @@ https://mdshinhasarder.lovable.app/* https://mdshinhasarder.com/:splat 301!
 https://www.mdshinhasarder.com/* https://mdshinhasarder.com/:splat 301!
 
 /sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=sitemap 200
+/sitemap-index.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=index 200
 /rss.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
 /atom.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=rss 200
 /news-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=news 200
 /image-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=images 200
+/video-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=videos 200
 /*  /index.html  200

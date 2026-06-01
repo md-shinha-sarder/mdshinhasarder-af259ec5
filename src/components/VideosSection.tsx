@@ -35,7 +35,7 @@ const extractFromPosts = (content: string, title: string): VideoEntry[] => {
 
 const VideosSection = () => {
   const { posts } = usePosts();
-  const { videos: ytVideos } = useVideos();
+  const { videos: ytVideos, hasMore, loading, loadMore } = useVideos(12);
   const [open, setOpen] = useState<string | null>(null);
 
   const videos = useMemo(() => {
@@ -69,7 +69,7 @@ const VideosSection = () => {
         <p className="text-center text-muted-foreground mb-12">Long-form videos from YouTube and articles.</p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {videos.slice(0, 12).map((v, i) => (
+          {videos.map((v, i) => (
             <button
               key={i}
               onClick={() => setOpen(v.embed)}
@@ -91,6 +91,19 @@ const VideosSection = () => {
             </button>
           ))}
         </div>
+
+        {hasMore && (
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={loadMore}
+              disabled={loading}
+              className="px-6 py-2.5 rounded-lg border border-border text-sm hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+            >
+              {loading ? "Loading…" : "Load more videos"}
+            </button>
+          </div>
+        )}
+
 
         {open && (
           <div onClick={() => setOpen(null)} className="fixed inset-0 z-[70] bg-background/95 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">

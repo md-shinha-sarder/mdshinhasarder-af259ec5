@@ -3,12 +3,12 @@ import { X, Play, Facebook, Youtube } from "lucide-react";
 import { useVideos } from "@/hooks/useVideos";
 
 const ReelsSection = () => {
-  const { videos, loading } = useVideos();
+  const { videos, reels, loading } = useVideos(12);
   const [open, setOpen] = useState<string | null>(null);
 
-  const shorts = videos.filter((v) => /shorts|#short/i.test(v.title)).slice(0, 12);
-  const fallback = videos.slice(0, 12);
-  const items = shorts.length > 0 ? shorts : fallback;
+  const fromReels = reels.slice(0, 16);
+  const fromTitles = videos.filter((v) => /shorts|#short/i.test(v.title));
+  const items = fromReels.length > 0 ? fromReels : (fromTitles.length > 0 ? fromTitles.slice(0, 12) : videos.slice(0, 12));
 
   return (
     <section id="reels" className="py-24">
@@ -37,7 +37,11 @@ const ReelsSection = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {items.map((v) => (
               <button key={v.id} onClick={() => setOpen(v.embed)} className="group relative aspect-[9/16] rounded-xl overflow-hidden border border-border hover:border-primary/60 transition-colors bg-card">
-                <img src={v.thumbnail} alt={v.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {v.thumbnail ? (
+                  <img src={v.thumbnail} alt={v.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-card flex items-center justify-center text-xs text-muted-foreground">{v.platform === "facebook" ? "Facebook Reel" : "Short"}</div>
+                )}
                 <span className="absolute inset-0 bg-background/30 group-hover:bg-background/10 transition-colors flex items-center justify-center">
                   <span className="w-12 h-12 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Play size={20} />
