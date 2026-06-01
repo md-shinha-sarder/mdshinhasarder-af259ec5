@@ -37,7 +37,11 @@ const ReelsSection = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {items.map((v) => (
               <button key={v.id} onClick={() => setOpen(v.embed)} className="group relative aspect-[9/16] rounded-xl overflow-hidden border border-border hover:border-primary/60 transition-colors bg-card">
-                <img src={v.thumbnail} alt={v.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {v.thumbnail ? (
+                  <img src={v.thumbnail} alt={v.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-card flex items-center justify-center text-xs text-muted-foreground">{v.platform === "facebook" ? "Facebook Reel" : "Short"}</div>
+                )}
                 <span className="absolute inset-0 bg-background/30 group-hover:bg-background/10 transition-colors flex items-center justify-center">
                   <span className="w-12 h-12 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Play size={20} />
