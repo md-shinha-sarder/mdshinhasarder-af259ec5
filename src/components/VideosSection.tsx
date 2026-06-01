@@ -35,7 +35,7 @@ const extractFromPosts = (content: string, title: string): VideoEntry[] => {
 
 const VideosSection = () => {
   const { posts } = usePosts();
-  const { videos: ytVideos } = useVideos();
+  const { videos: ytVideos, hasMore, loading, loadMore } = useVideos(12);
   const [open, setOpen] = useState<string | null>(null);
 
   const videos = useMemo(() => {
