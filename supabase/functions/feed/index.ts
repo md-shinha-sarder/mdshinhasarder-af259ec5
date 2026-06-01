@@ -36,8 +36,9 @@ async function getEntries() {
     const lm = e.match(/<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i);
     const url = lm ? lm[1] : "";
     const img = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url };
+    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url, content };
   });
+
 }
 
 Deno.serve(async (req) => {
