@@ -3,12 +3,12 @@ import { X, Play, Facebook, Youtube } from "lucide-react";
 import { useVideos } from "@/hooks/useVideos";
 
 const ReelsSection = () => {
-  const { videos, loading } = useVideos();
+  const { videos, reels, loading } = useVideos(12);
   const [open, setOpen] = useState<string | null>(null);
 
-  const shorts = videos.filter((v) => /shorts|#short/i.test(v.title)).slice(0, 12);
-  const fallback = videos.slice(0, 12);
-  const items = shorts.length > 0 ? shorts : fallback;
+  const fromReels = reels.slice(0, 16);
+  const fromTitles = videos.filter((v) => /shorts|#short/i.test(v.title));
+  const items = fromReels.length > 0 ? fromReels : (fromTitles.length > 0 ? fromTitles.slice(0, 12) : videos.slice(0, 12));
 
   return (
     <section id="reels" className="py-24">
