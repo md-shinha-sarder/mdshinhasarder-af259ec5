@@ -99,6 +99,48 @@ Deno.serve(async (req) => {
       return new Response(imgs, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
     }
 
+    if (type === "videos") {
+      const items: string[] = [];
+      for (const e of entries) {
+        const re = /<iframe[^>]+src=["']([^"']+)["']/gi; let m;
+        while ((m = re.exec(e.content || "")) !== null) {
+          const src = m[1];
+          const yt = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          if (!yt) continue;
+          const vid = yt[1];
+          items.push(`
+  <url>
+    <loc>${BASE}${postPath(e)}</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/${vid}/hqdefault.jpg</video:thumbnail_loc>
+      <video:title>${xmlEsc(e.title)}</video:title>
+      <video:description>${xmlEsc(e.excerpt)}</video:description>
+      <video:player_loc allow_embed="yes">https://www.youtube.com/embed/${vid}</video:player_loc>
+      <video:publication_date>${new Date(e.published || Date.now()).toISOString()}</video:publication_date>
+    </video:video>
+  </url>`);
+        }
+      }
+      const vids = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">${items.join("")}
+</urlset>`;
+      return new Response(vids, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    if (type === "index") {
+      const now = new Date().toISOString();
+      const idx = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>${BASE}/sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/news-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/image-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/video-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+</sitemapindex>`;
+      return new Response(idx, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+
+
     const staticPaths = ["/", "/posts", "/#about", "/#skills", "/#projects", "/#services", "/#gallery", "/#music", "/#books", "/#publications", "/#blog"];
     const urls = [
       ...staticPaths.map((p) => `<url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`),
