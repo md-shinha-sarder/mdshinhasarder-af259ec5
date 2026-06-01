@@ -20,3 +20,8 @@ User-agent: facebookexternalhit
 Allow: /
 
 Sitemap: https://mdshinhasarder.com/sitemap.xml
+Sitemap: https://mdshinhasarder.com/sitemap-index.xml
+Sitemap: https://mdshinhasarder.com/news-sitemap.xml
+Sitemap: https://mdshinhasarder.com/image-sitemap.xml
+Sitemap: https://mdshinhasarder.com/video-sitemap.xml
+
