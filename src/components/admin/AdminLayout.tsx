@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, FileText, Newspaper, Image, Settings, Palette, LogOut, Home } from "lucide-react";
+import { LayoutDashboard, FileText, Newspaper, Image, Settings, Palette, LogOut, Home, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const items = [
@@ -9,6 +9,7 @@ const items = [
   { to: "/admin/pages", icon: FileText, label: "Pages" },
   { to: "/admin/posts", icon: Newspaper, label: "Posts" },
   { to: "/admin/media", icon: Image, label: "Media" },
+  { to: "/admin/news-check", icon: ShieldCheck, label: "News Eligibility" },
   { to: "/admin/seo", icon: Settings, label: "SEO Settings" },
   { to: "/admin/theme", icon: Palette, label: "Theme" },
 ];

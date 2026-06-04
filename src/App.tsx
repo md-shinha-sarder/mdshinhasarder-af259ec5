@@ -19,6 +19,7 @@ import PostsAdmin from "./pages/admin/PostsAdmin.tsx";
 import MediaAdmin from "./pages/admin/MediaAdmin.tsx";
 import SeoAdmin from "./pages/admin/SeoAdmin.tsx";
 import ThemeAdmin from "./pages/admin/ThemeAdmin.tsx";
+import NewsCheckAdmin from "./pages/admin/NewsCheckAdmin.tsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const AppRoutes = () => {
           <Route path="pages" element={<PagesAdmin />} />
           <Route path="posts" element={<PostsAdmin />} />
           <Route path="media" element={<MediaAdmin />} />
+          <Route path="news-check" element={<NewsCheckAdmin />} />
           <Route path="seo" element={<SeoAdmin />} />
           <Route path="theme" element={<ThemeAdmin />} />
         </Route>
