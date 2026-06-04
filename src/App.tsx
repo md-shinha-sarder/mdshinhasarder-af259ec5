@@ -46,6 +46,7 @@ const AppRoutes = () => {
           <Route path="pages" element={<PagesAdmin />} />
           <Route path="posts" element={<PostsAdmin />} />
           <Route path="media" element={<MediaAdmin />} />
+          <Route path="news-check" element={<NewsCheckAdmin />} />
           <Route path="seo" element={<SeoAdmin />} />
           <Route path="theme" element={<ThemeAdmin />} />
         </Route>
