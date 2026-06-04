@@ -21,6 +21,19 @@ const PostDetail = () => {
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [slug]);
 
+  // Extract embedded YouTube video IDs for VideoObject schema
+  const videoIds = ((post?.content || "").match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=)([\w-]{11})/g) || [])
+    .map((m) => (m.match(/([\w-]{11})$/) || [])[1]).filter(Boolean) as string[];
+
+  // Ping search engines for new indexing once post is loaded
+  useEffect(() => {
+    if (!post || !url) return;
+    const key = `pinged:${slug}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    fetch(`https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/ping-indexing?url=${encodeURIComponent(url)}`).catch(() => {});
+  }, [post, slug, url]);
+
   const share = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
     twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(post?.title || "")}`,
