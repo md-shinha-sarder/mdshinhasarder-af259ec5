@@ -89,10 +89,24 @@ const NewsCheckAdmin = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-serif font-bold text-gradient-gold">Google News Eligibility</h1>
-        <p className="text-sm text-muted-foreground mt-1">Validates NewsArticle requirements, description length and sitemap inclusion for every post.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-serif font-bold text-gradient-gold">Google News Eligibility</h1>
+          <p className="text-sm text-muted-foreground mt-1">Validates NewsArticle requirements, description length and sitemap inclusion for every post.</p>
+          {auditedAt && <p className="text-[11px] text-muted-foreground/70 mt-1">Last audit: {auditedAt.toLocaleTimeString()}</p>}
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <Button onClick={rerun} disabled={busy !== null} variant="outline" className="gap-2"><RefreshCw size={14} className={busy === "rerun" ? "animate-spin" : ""} /> Re-run check</Button>
+          <Button onClick={reindexAll} disabled={busy !== null} className="gap-2"><Zap size={14} /> One-click reindex</Button>
+        </div>
       </div>
+
+      {reindexProgress && (
+        <div className="p-3 rounded-lg border border-primary/30 bg-primary/5">
+          <div className="flex justify-between text-xs mb-1.5"><span>Reindexing…</span><span>{reindexProgress.done}/{reindexProgress.total}</span></div>
+          <div className="h-1.5 bg-card rounded-full overflow-hidden"><div className="h-full bg-primary transition-all" style={{ width: `${(reindexProgress.done / reindexProgress.total) * 100}%` }} /></div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="p-4 rounded-xl border border-border bg-card/60"><div className="text-xs text-muted-foreground">Posts</div><div className="text-2xl font-bold">{posts.length}</div></div>
@@ -101,8 +115,23 @@ const NewsCheckAdmin = () => {
         <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5"><div className="text-xs text-rose-400">Failing</div><div className="text-2xl font-bold">{summary.fail}</div></div>
       </div>
 
+      <div className="p-4 rounded-xl border border-border bg-card/40">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-serif font-semibold flex items-center gap-2"><LayoutGrid size={16} className="text-primary" /> Homepage sections</h2>
+          <Button size="sm" variant="ghost" onClick={reset} className="h-7 text-xs">Reset</Button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {HOME_SECTIONS.map((s) => (
+            <label key={s.key} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-border bg-background/40">
+              <span className="text-sm">{s.label}</span>
+              <Switch checked={!!sections[s.key]} onCheckedChange={(v) => setSection(s.key, v)} />
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => ping()} disabled={busy === "all"} className="gap-2"><Send size={14} /> Ping sitemaps now</Button>
+        <Button onClick={() => ping()} disabled={busy === "all"} variant="outline" className="gap-2"><Send size={14} /> Ping sitemaps only</Button>
         <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap.xml</a>
         <a href="/news-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> news-sitemap.xml</a>
         <a href="/video-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> video-sitemap.xml</a>
