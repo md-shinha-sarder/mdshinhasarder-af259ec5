@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 
 const socials = [
   { Icon: FaFacebook, href: "https://www.facebook.com/md.shinha.sarder", label: "Facebook", color: "#1877F2" },
-  { Icon: FaXTwitter, href: "https://x.com/mdshinhasarder", label: "X / Twitter", color: "#000000" },
+  { Icon: FaXTwitter, href: "https://x.com/mdshinhasarder", label: "X / Twitter", color: "#ffffff" },
   { Icon: FaYoutube, href: "https://www.youtube.com/@MD-Shinha-Sarder", label: "YouTube", color: "#FF0000" },
   { Icon: FaInstagram, href: "https://www.instagram.com/md_shinha_sarder", label: "Instagram", color: "#E4405F" },
   { Icon: FaLinkedin, href: "https://www.linkedin.com/in/md-shinha-sarder/", label: "LinkedIn", color: "#0A66C2" },
   { Icon: FaGithub, href: "https://github.com/md-shinha-sarder", label: "GitHub", color: "#ffffff" },
-  { Icon: FaWhatsapp, href: "https://wa.me/8801576716992", label: "WhatsApp", color: "#25D366" },
 ];
 
 const FooterSection = () => (

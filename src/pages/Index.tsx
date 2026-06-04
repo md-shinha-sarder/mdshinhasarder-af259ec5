@@ -13,24 +13,26 @@ import PublicationsSection from "@/components/PublicationsSection";
 import BlogSection from "@/components/BlogSection";
 import FooterSection from "@/components/FooterSection";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useHomeSections } from "@/hooks/useHomeSections";
 
 const Index = () => {
   useSiteSettings();
+  const { sections } = useHomeSections();
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <HeroSection />
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <ServicesSection />
-      <GallerySection />
-      <VideosSection />
-      <ReelsSection />
-      <MusicSection />
-      <BooksSection />
-      <PublicationsSection />
-      <BlogSection />
+      {sections.hero && <HeroSection />}
+      {sections.about && <AboutSection />}
+      {sections.skills && <SkillsSection />}
+      {sections.projects && <ProjectsSection />}
+      {sections.services && <ServicesSection />}
+      {sections.gallery && <GallerySection />}
+      {sections.videos && <VideosSection />}
+      {sections.reels && <ReelsSection />}
+      {sections.music && <MusicSection />}
+      {sections.books && <BooksSection />}
+      {sections.publications && <PublicationsSection />}
+      {sections.blog && <BlogSection />}
       <FooterSection />
     </div>
   );
