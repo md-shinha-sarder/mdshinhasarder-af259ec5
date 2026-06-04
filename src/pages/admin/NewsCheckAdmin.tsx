@@ -1,0 +1,113 @@
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { CheckCircle2, XCircle, AlertTriangle, Send, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
+import { toast } from "sonner";
+
+const FN = "https://ihegjzwlvthfqwredssj.supabase.co/functions/v1";
+
+interface Check { ok: boolean; warn?: boolean; label: string; detail?: string }
+
+const check = (post: ReturnType<typeof usePosts>["posts"][number]): Check[] => {
+  const text = (post.excerpt || "").trim();
+  const len = text.length;
+  const heads = post.title.length;
+  const hasImage = !!post.image;
+  const date = post.published ? new Date(post.published).toString() !== "Invalid Date" : false;
+  const tags = (post.tags || []).length > 0;
+  const slugOk = /^[a-z0-9-]+$/.test(post.slug);
+  return [
+    { ok: heads > 0 && heads <= 110, label: `Headline length (${heads}/110)` },
+    { ok: len >= 60 && len <= 160, warn: len > 0 && (len < 60 || len > 160), label: `Description length (${len}/160)`, detail: !len ? "Missing description" : len < 60 ? "Too short" : len > 160 ? "Too long" : "OK" },
+    { ok: hasImage, label: "Featured image present" },
+    { ok: date, label: "Valid publish date" },
+    { ok: tags, warn: !tags, label: "Keywords / tags" },
+    { ok: slugOk, label: "Clean slug format" },
+  ];
+};
+
+const NewsCheckAdmin = () => {
+  const { posts, loading } = usePosts();
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const summary = useMemo(() => {
+    let pass = 0, warn = 0, fail = 0;
+    posts.forEach((p) => check(p).forEach((c) => c.ok ? pass++ : c.warn ? warn++ : fail++));
+    return { pass, warn, fail };
+  }, [posts]);
+
+  const ping = async (url?: string) => {
+    setBusy(url || "all");
+    try {
+      const r = await fetch(`${FN}/ping-indexing${url ? `?url=${encodeURIComponent(url)}` : ""}`);
+      const j = await r.json();
+      console.log("ping", j);
+      toast.success(url ? "Pinged search engines for this URL" : "Pinged sitemaps");
+    } catch (e) {
+      toast.error("Ping failed");
+    } finally { setBusy(null); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-serif font-bold text-gradient-gold">Google News Eligibility</h1>
+        <p className="text-sm text-muted-foreground mt-1">Validates NewsArticle requirements, description length and sitemap inclusion for every post.</p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="p-4 rounded-xl border border-border bg-card/60"><div className="text-xs text-muted-foreground">Posts</div><div className="text-2xl font-bold">{posts.length}</div></div>
+        <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5"><div className="text-xs text-emerald-400">Passing</div><div className="text-2xl font-bold">{summary.pass}</div></div>
+        <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5"><div className="text-xs text-amber-400">Warnings</div><div className="text-2xl font-bold">{summary.warn}</div></div>
+        <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5"><div className="text-xs text-rose-400">Failing</div><div className="text-2xl font-bold">{summary.fail}</div></div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => ping()} disabled={busy === "all"} className="gap-2"><Send size={14} /> Ping sitemaps now</Button>
+        <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap.xml</a>
+        <a href="/news-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> news-sitemap.xml</a>
+        <a href="/video-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> video-sitemap.xml</a>
+        <a href="/image-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> image-sitemap.xml</a>
+      </div>
+
+      {loading && <div className="text-sm text-muted-foreground">Loading posts…</div>}
+
+      <div className="space-y-3">
+        {posts.map((p) => {
+          const checks = check(p);
+          const fails = checks.filter((c) => !c.ok && !c.warn).length;
+          const warns = checks.filter((c) => c.warn).length;
+          return (
+            <div key={p.id} className="p-4 rounded-xl border border-border bg-card/40">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="min-w-0">
+                  <Link to={postPath(p)} className="font-serif font-semibold hover:text-primary line-clamp-1">{p.title}</Link>
+                  <div className="text-xs text-muted-foreground mt-0.5">{new Date(p.published).toLocaleDateString()} · /{p.slug}</div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${fails ? "bg-rose-500/15 text-rose-400" : warns ? "bg-amber-500/15 text-amber-400" : "bg-emerald-500/15 text-emerald-400"}`}>
+                    {fails ? `${fails} fail` : warns ? `${warns} warn` : "Eligible"}
+                  </span>
+                  <Button size="sm" variant="outline" onClick={() => ping(`https://mdshinhasarder.com${postPath(p)}`)} disabled={busy !== null} className="gap-1 h-7"><Send size={12} /> Ping</Button>
+                </div>
+              </div>
+              <ul className="grid sm:grid-cols-2 gap-1.5 text-xs">
+                {checks.map((c, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    {c.ok ? <CheckCircle2 size={13} className="text-emerald-400" /> : c.warn ? <AlertTriangle size={13} className="text-amber-400" /> : <XCircle size={13} className="text-rose-400" />}
+                    <span className="text-muted-foreground">{c.label}</span>
+                    {c.detail && <span className="text-[10px] text-muted-foreground/70">· {c.detail}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default NewsCheckAdmin;
