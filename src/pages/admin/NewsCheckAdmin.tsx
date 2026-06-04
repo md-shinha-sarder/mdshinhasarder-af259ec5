@@ -31,14 +31,17 @@ const check = (post: ReturnType<typeof usePosts>["posts"][number]): Check[] => {
 };
 
 const NewsCheckAdmin = () => {
-  const { posts, loading } = usePosts();
+  const { posts, loading, refetch } = usePosts();
+  const { sections, setSection, reset } = useHomeSections();
   const [busy, setBusy] = useState<string | null>(null);
+  const [auditedAt, setAuditedAt] = useState<Date | null>(null);
+  const [reindexProgress, setReindexProgress] = useState<{ done: number; total: number } | null>(null);
 
   const summary = useMemo(() => {
     let pass = 0, warn = 0, fail = 0;
     posts.forEach((p) => check(p).forEach((c) => c.ok ? pass++ : c.warn ? warn++ : fail++));
     return { pass, warn, fail };
-  }, [posts]);
+  }, [posts, auditedAt]);
 
   const ping = async (url?: string) => {
     setBusy(url || "all");
@@ -47,9 +50,41 @@ const NewsCheckAdmin = () => {
       const j = await r.json();
       console.log("ping", j);
       toast.success(url ? "Pinged search engines for this URL" : "Pinged sitemaps");
-    } catch (e) {
+    } catch {
       toast.error("Ping failed");
     } finally { setBusy(null); }
+  };
+
+  const rerun = async () => {
+    setBusy("rerun");
+    try {
+      await refetch();
+      setAuditedAt(new Date());
+      toast.success("Re-audited all posts");
+    } catch { toast.error("Re-audit failed"); } finally { setBusy(null); }
+  };
+
+  const reindexAll = async () => {
+    setBusy("reindex");
+    setReindexProgress({ done: 0, total: posts.length + 1 });
+    try {
+      await fetch(`${FN}/ping-indexing`);
+      setReindexProgress({ done: 1, total: posts.length + 1 });
+      let done = 1;
+      const batch = 5;
+      for (let i = 0; i < posts.length; i += batch) {
+        const slice = posts.slice(i, i + batch);
+        await Promise.all(slice.map((p) =>
+          fetch(`${FN}/ping-indexing?url=${encodeURIComponent(`https://mdshinhasarder.com${postPath(p)}`)}`).catch(() => {})
+        ));
+        done += slice.length;
+        setReindexProgress({ done, total: posts.length + 1 });
+      }
+      toast.success(`Re-indexed ${posts.length} URLs + sitemaps`);
+    } catch { toast.error("Reindex failed"); } finally {
+      setBusy(null);
+      setTimeout(() => setReindexProgress(null), 2500);
+    }
   };
 
   return (
