@@ -75,10 +75,16 @@ const PostDetail = () => {
           <meta property="og:type" content="article" />
           <meta property="og:url" content={url} />
           {post.image && <meta property="og:image" content={post.image} />}
+          {post.image && <meta property="og:image:alt" content={post.title} />}
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:site_name" content="MD. Shinha Sarder" />
           <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@mdshinhasarder" />
+          <meta name="twitter:creator" content="@mdshinhasarder" />
           <meta name="twitter:title" content={post.title} />
           <meta name="twitter:description" content={cleanDesc} />
           {post.image && <meta name="twitter:image" content={post.image} />}
+          {post.image && <meta name="twitter:image:alt" content={post.title} />}
           <meta property="article:published_time" content={post.published} />
           <meta property="article:modified_time" content={post.updated} />
           <meta property="article:author" content="MD. Shinha Sarder" />
@@ -98,6 +104,19 @@ const PostDetail = () => {
             isAccessibleForFree: true,
             keywords: post.tags.join(", "),
           })}</script>
+          {videoIds.map((vid) => (
+            <script key={vid} type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "VideoObject",
+              name: post.title,
+              description: cleanDesc,
+              thumbnailUrl: [`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`, `https://i.ytimg.com/vi/${vid}/maxresdefault.jpg`],
+              uploadDate: post.published,
+              contentUrl: `https://www.youtube.com/watch?v=${vid}`,
+              embedUrl: `https://www.youtube.com/embed/${vid}`,
+              publisher: { "@type": "Organization", name: "MD. Shinha Sarder", logo: { "@type": "ImageObject", url: "https://mdshinhasarder.com/favicon.ico" } },
+            })}</script>
+          ))}
         </Helmet>
       )}
 
