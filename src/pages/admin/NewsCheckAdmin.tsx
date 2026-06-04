@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, XCircle, AlertTriangle, Send, ExternalLink } from "lucide-react";
+import { CheckCircle2, XCircle, AlertTriangle, Send, ExternalLink, RefreshCw, Zap, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
+import { useHomeSections, HOME_SECTIONS } from "@/hooks/useHomeSections";
 import { toast } from "sonner";
 
 const FN = "https://ihegjzwlvthfqwredssj.supabase.co/functions/v1";
