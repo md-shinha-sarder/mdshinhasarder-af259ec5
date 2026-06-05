@@ -66,10 +66,10 @@ const PostDetail = () => {
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@mdshinhasarder" />
           <meta name="twitter:creator" content="@mdshinhasarder" />
-          <meta name="twitter:title" content={post.title} />
+          <meta name="twitter:title" content={seo.twitterTitle} />
           <meta name="twitter:description" content={cleanDesc} />
-          {post.image && <meta name="twitter:image" content={post.image} />}
-          {post.image && <meta name="twitter:image:alt" content={post.title} />}
+          <meta name="twitter:image" content={seo.ogImage} />
+          <meta name="twitter:image:alt" content={post.title} />
           <meta property="article:published_time" content={post.published} />
           <meta property="article:modified_time" content={post.updated} />
           <meta property="article:author" content="MD. Shinha Sarder" />
@@ -77,7 +77,7 @@ const PostDetail = () => {
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "NewsArticle",
-            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
             headline: post.title.slice(0, 110),
             description: cleanDesc,
             image: post.image ? [post.image] : undefined,
