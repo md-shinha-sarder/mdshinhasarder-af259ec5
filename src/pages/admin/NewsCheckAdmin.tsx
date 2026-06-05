@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
 import { useHomeSections, HOME_SECTIONS } from "@/hooks/useHomeSections";
+import { buildSeo } from "@/lib/seo";
 import { toast } from "sonner";
 
 const FN = "https://ihegjzwlvthfqwredssj.supabase.co/functions/v1";
@@ -13,16 +14,21 @@ const FN = "https://ihegjzwlvthfqwredssj.supabase.co/functions/v1";
 interface Check { ok: boolean; warn?: boolean; label: string; detail?: string }
 
 const check = (post: ReturnType<typeof usePosts>["posts"][number]): Check[] => {
-  const text = (post.excerpt || "").trim();
-  const len = text.length;
+  const seo = buildSeo(post);
+  const descLen = seo.metaDescription.length;
+  const titleLen = seo.metaTitle.length;
   const heads = post.title.length;
   const hasImage = !!post.image;
   const date = post.published ? new Date(post.published).toString() !== "Invalid Date" : false;
   const tags = (post.tags || []).length > 0;
   const slugOk = /^[a-z0-9-]+$/.test(post.slug);
+  const canonicalOk = /^https:\/\/mdshinhasarder\.com\/\d{4}\/\d{2}\/[a-z0-9-]+\.html$/.test(seo.canonical);
   return [
     { ok: heads > 0 && heads <= 110, label: `Headline length (${heads}/110)` },
-    { ok: len >= 60 && len <= 160, warn: len > 0 && (len < 60 || len > 160), label: `Description length (${len}/160)`, detail: !len ? "Missing description" : len < 60 ? "Too short" : len > 160 ? "Too long" : "OK" },
+    { ok: titleLen > 0 && titleLen <= 60, warn: titleLen > 60, label: `Meta title length (${titleLen}/60)`, detail: titleLen > 60 ? "Truncated by Google" : "OK" },
+    { ok: descLen >= 60 && descLen <= 160, warn: descLen > 0 && (descLen < 60 || descLen > 160), label: `Meta description (${descLen}/160)`, detail: !descLen ? "Missing" : descLen < 60 ? "Too short" : descLen > 160 ? "Too long" : "OK" },
+    { ok: !!seo.ogTitle && !!seo.ogDescription, label: "OG / Twitter tags generated" },
+    { ok: canonicalOk, label: "Canonical URL valid", detail: canonicalOk ? "OK" : seo.canonical },
     { ok: hasImage, label: "Featured image present" },
     { ok: date, label: "Valid publish date" },
     { ok: tags, warn: !tags, label: "Keywords / tags" },
