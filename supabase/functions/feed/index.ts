@@ -5,6 +5,7 @@ const corsHeaders = {
 
 const BASE = "https://mdshinhasarder.com";
 const FEED = "https://shinhaauthor.blogspot.com/feeds/posts/default?max-results=500";
+const XSL = `<?xml-stylesheet type="text/xsl" href="${BASE}/sitemap.xsl"?>`;
 
 function pickAll(xml: string, tag: string) {
   const out: string[] = []; const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "gi");
@@ -83,6 +84,7 @@ Deno.serve(async (req) => {
     </news:news>
   </url>`).join("");
       const news = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">${items}
 </urlset>`;
       return new Response(news, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
@@ -95,6 +97,7 @@ Deno.serve(async (req) => {
     <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
   </url>`).join("");
       const imgs = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${items}
 </urlset>`;
       return new Response(imgs, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
@@ -123,6 +126,7 @@ Deno.serve(async (req) => {
         }
       }
       const vids = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">${items.join("")}
 </urlset>`;
       return new Response(vids, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
@@ -131,6 +135,7 @@ Deno.serve(async (req) => {
     if (type === "index") {
       const now = new Date().toISOString();
       const idx = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap><loc>${BASE}/sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${BASE}/news-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
@@ -153,6 +158,7 @@ Deno.serve(async (req) => {
   </url>`),
     ].join("\n  ");
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   ${urls}
 </urlset>`;

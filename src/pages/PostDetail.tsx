@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
+import { buildSeo, SITE } from "@/lib/seo";
 import { toast } from "sonner";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); } catch { return ""; } };
@@ -42,49 +43,33 @@ const PostDetail = () => {
   };
   const copy = () => { navigator.clipboard.writeText(url); toast.success("Link copied"); };
 
-  const stripHtml = (s: string) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-  const buildDesc = () => {
-    const sources = [post?.excerpt || "", stripHtml(post?.content || "")];
-    for (const raw of sources) {
-      const clean = raw
-        .replace(/https?:\/\/\S+/g, "")
-        .replace(/\[[^\]]*\]/g, "")
-        .replace(/[\r\n\t]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-      if (clean.length >= 60) {
-        const slice = clean.slice(0, 160);
-        const cut = slice.lastIndexOf(" ");
-        return (cut > 80 ? slice.slice(0, cut) : slice).trim() + (clean.length > 160 ? "…" : "");
-      }
-    }
-    return post?.title ? `${post.title} — Read the full article by MD. Shinha Sarder.` : "";
-  };
-  const cleanDesc = buildDesc();
+  const seo = post ? buildSeo(post) : null;
+  const cleanDesc = seo?.metaDescription || "";
+  const canonical = seo?.canonical || url;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      {post && (
+      {post && seo && (
         <Helmet>
-          <title>{post.title} | MD. Shinha Sarder</title>
+          <title>{seo.metaTitle}</title>
           <meta name="description" content={cleanDesc} />
-          <link rel="canonical" href={url} />
-          <meta property="og:title" content={post.title} />
+          <link rel="canonical" href={canonical} />
+          <meta property="og:title" content={seo.ogTitle} />
           <meta property="og:description" content={cleanDesc} />
           <meta property="og:type" content="article" />
-          <meta property="og:url" content={url} />
-          {post.image && <meta property="og:image" content={post.image} />}
-          {post.image && <meta property="og:image:alt" content={post.title} />}
+          <meta property="og:url" content={canonical} />
+          <meta property="og:image" content={seo.ogImage} />
+          <meta property="og:image:alt" content={post.title} />
           <meta property="og:locale" content="en_US" />
           <meta property="og:site_name" content="MD. Shinha Sarder" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@mdshinhasarder" />
           <meta name="twitter:creator" content="@mdshinhasarder" />
-          <meta name="twitter:title" content={post.title} />
+          <meta name="twitter:title" content={seo.twitterTitle} />
           <meta name="twitter:description" content={cleanDesc} />
-          {post.image && <meta name="twitter:image" content={post.image} />}
-          {post.image && <meta name="twitter:image:alt" content={post.title} />}
+          <meta name="twitter:image" content={seo.ogImage} />
+          <meta name="twitter:image:alt" content={post.title} />
           <meta property="article:published_time" content={post.published} />
           <meta property="article:modified_time" content={post.updated} />
           <meta property="article:author" content="MD. Shinha Sarder" />
@@ -92,7 +77,7 @@ const PostDetail = () => {
           <script type="application/ld+json">{JSON.stringify({
             "@context": "https://schema.org",
             "@type": "NewsArticle",
-            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
             headline: post.title.slice(0, 110),
             description: cleanDesc,
             image: post.image ? [post.image] : undefined,
