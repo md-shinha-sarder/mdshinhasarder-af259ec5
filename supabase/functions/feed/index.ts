@@ -5,6 +5,7 @@ const corsHeaders = {
 
 const BASE = "https://mdshinhasarder.com";
 const FEED = "https://shinhaauthor.blogspot.com/feeds/posts/default?max-results=500";
+const XSL = `<?xml-stylesheet type="text/xsl" href="${BASE}/sitemap.xsl"?>`;
 
 function pickAll(xml: string, tag: string) {
   const out: string[] = []; const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "gi");
