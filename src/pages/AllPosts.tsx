@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Calendar, Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -11,8 +11,18 @@ const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US"
 
 const AllPosts = () => {
   const { posts, loading } = usePosts();
-  const [q, setQ] = useState("");
+  const [sp, setSp] = useSearchParams();
+  const [q, setQ] = useState(sp.get("q") || "");
   const [tag, setTag] = useState<string | null>(null);
+  useEffect(() => { setQ(sp.get("q") || ""); }, [sp]);
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const next = new URLSearchParams(sp);
+      if (q) next.set("q", q); else next.delete("q");
+      setSp(next, { replace: true });
+    }, 200);
+    return () => clearTimeout(t);
+  }, [q]);
   const allTags = useMemo(() => Array.from(new Set(posts.flatMap((p) => p.tags))).sort(), [posts]);
   const filtered = posts.filter((p) =>
     (!tag || p.tags.includes(tag)) &&
