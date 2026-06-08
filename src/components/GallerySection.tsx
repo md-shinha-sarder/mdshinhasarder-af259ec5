@@ -9,17 +9,19 @@ const GallerySection = () => {
 
   const images = useMemo(() => {
     const set = new Set<string>();
-    const out: { src: string; title: string }[] = [];
+    const out: { src: string; title: string; tags: string[]; idx: number }[] = [];
     posts.forEach((p) => {
       const found = new Set<string>();
       if (p.image) found.add(p.image);
       const re = /<img[^>]+src=["']([^"']+)["']/gi;
       let m;
       while ((m = re.exec(p.content)) !== null) found.add(m[1]);
+      let i = 0;
       found.forEach((src) => {
+        i += 1;
         if (!set.has(src)) {
           set.add(src);
-          out.push({ src, title: p.title });
+          out.push({ src, title: p.title, tags: p.tags || [], idx: i });
         }
       });
     });
