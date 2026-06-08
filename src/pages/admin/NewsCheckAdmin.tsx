@@ -149,9 +149,15 @@ const NewsCheckAdmin = () => {
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => ping()} disabled={busy === "all"} variant="outline" className="gap-2"><Send size={14} /> Ping sitemaps only</Button>
-        <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap.xml</a>
+        <a href="/sitemap-index.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap-index.xml</a>
+        <a href="/post-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> post-sitemap.xml</a>
+        <a href="/category-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> category-sitemap.xml</a>
+        <a href="/tag-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> tag-sitemap.xml</a>
+        <a href="/page-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> page-sitemap.xml</a>
         <a href="/news-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> news-sitemap.xml</a>
         <a href="/video-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> video-sitemap.xml</a>
+        <a href="/image-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> image-sitemap.xml</a>
+      </div>
         <a href="/image-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> image-sitemap.xml</a>
       </div>
 
