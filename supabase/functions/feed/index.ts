@@ -96,11 +96,15 @@ ${XSL}
     <loc>${BASE}/</loc>
     <image:image><image:loc>${BASE}/profile.webp</image:loc><image:title>MD. Shinha Sarder</image:title><image:caption>Founder &amp; CEO of IT Tech BD and Biostar TV World</image:caption></image:image>
   </url>`;
-      const items = entries.filter((e) => e.image).map((e) => `
-  <url>
-    <loc>${BASE}${postPath(e)}</loc>
-    <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
-  </url>`).join("");
+      const items = entries.map((e) => {
+        const imgs: string[] = [];
+        if (e.image) imgs.push(e.image);
+        const re = /<img[^>]+src=["']([^"']+)["']/gi; let m;
+        while ((m = re.exec(e.content || "")) !== null) if (!imgs.includes(m[1])) imgs.push(m[1]);
+        if (!imgs.length) return "";
+        const imgBlocks = imgs.slice(0, 1000).map((u) => `\n    <image:image><image:loc>${xmlEsc(u)}</image:loc><image:title>${xmlEsc(e.title)}</image:title><image:caption>${xmlEsc(e.excerpt)}</image:caption></image:image>`).join("");
+        return `\n  <url>\n    <loc>${BASE}${postPath(e)}</loc>${imgBlocks}\n  </url>`;
+      }).join("");
       const imgs = `<?xml version="1.0" encoding="UTF-8"?>
 ${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${homeImg}${items}
