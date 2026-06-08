@@ -85,7 +85,7 @@ const PostDetail = () => {
             mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
             headline: post.title.slice(0, 110),
             description: cleanDesc,
-            image: post.image ? [post.image] : undefined,
+            image: allImages.length ? allImages.map((u) => ({ "@type": "ImageObject", url: u, width: 1200, height: 800, caption: post.title })) : undefined,
             datePublished: post.published,
             dateModified: post.updated || post.published,
             author: { "@type": "Person", name: "MD. Shinha Sarder", url: "https://mdshinhasarder.com/" },
