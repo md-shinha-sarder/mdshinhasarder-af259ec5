@@ -107,6 +107,23 @@ const PostDetail = () => {
               publisher: { "@type": "Organization", name: "MD. Shinha Sarder", logo: { "@type": "ImageObject", url: "https://mdshinhasarder.com/favicon.ico" } },
             })}</script>
           ))}
+          {allImages.slice(0, 10).map((u) => (
+            <script key={u} type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ImageObject",
+              contentUrl: u,
+              url: u,
+              width: 1200,
+              height: 800,
+              caption: post.title,
+              name: post.title,
+              description: cleanDesc,
+              author: { "@type": "Person", name: "MD. Shinha Sarder" },
+              creditText: "MD. Shinha Sarder",
+              license: canonical,
+              acquireLicensePage: canonical,
+            })}</script>
+          ))}
         </Helmet>
       )}
 
