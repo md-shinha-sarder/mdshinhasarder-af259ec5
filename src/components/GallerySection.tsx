@@ -60,7 +60,7 @@ const GallerySection = () => {
             <button onClick={() => setOpen(null)} aria-label="Close" className="absolute top-6 right-6 w-10 h-10 rounded-full border border-border bg-card flex items-center justify-center hover:text-primary hover:border-primary">
               <X size={18} />
             </button>
-            <img src={open} alt="" className="max-w-full max-h-full rounded-xl shadow-card" />
+            <img src={open} alt="Photo by MD. Shinha Sarder" loading="eager" decoding="async" className="max-w-full max-h-full rounded-xl shadow-card" />
           </div>
         )}
       </div>
