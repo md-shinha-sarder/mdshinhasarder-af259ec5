@@ -36,7 +36,7 @@ const BlogSection = () => {
               >
                 {p.image && (
                   <div className="aspect-[16/10] overflow-hidden bg-secondary">
-                    <img src={p.image} alt={p.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={p.image} alt={buildAlt(p.title, p.tags)} width={800} height={500} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                 )}
                 <div className="p-5 flex-1 flex flex-col">
