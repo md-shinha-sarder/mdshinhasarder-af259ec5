@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
+import { buildAlt } from "@/lib/imageSeo";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch { return ""; } };
 
