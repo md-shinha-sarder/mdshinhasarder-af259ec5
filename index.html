@@ -11,6 +11,8 @@
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://mdshinhasarder.com/" />
     <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="preload" as="image" href="/profile.webp" fetchpriority="high" type="image/webp" />
+    <link rel="image_src" href="https://mdshinhasarder.com/profile.webp" />
     <link rel="alternate" type="application/rss+xml" title="MD. Shinha Sarder — RSS Feed" href="/rss.xml" />
     <link rel="alternate" type="application/atom+xml" title="MD. Shinha Sarder — Atom Feed" href="/atom.xml" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
@@ -37,7 +39,11 @@
     <meta property="og:title" content="MD. Shinha Sarder" />
     <meta property="og:description" content="MD. Shinha Sarder is known as the Founder & CEO of IT Tech BD and Biostar TV World who was born on 5 November, 2004. He is also known as an Engineer, Developer." />
     <meta property="og:url" content="https://mdshinhasarder.com/" />
-    <meta property="og:image" content="https://mdshinhasarder.com/profile.jpg" />
+    <meta property="og:image" content="https://mdshinhasarder.com/profile.webp" />
+    <meta property="og:image:secure_url" content="https://mdshinhasarder.com/profile.webp" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="1200" />
     <meta property="og:image:alt" content="MD. Shinha Sarder — Founder & CEO of IT Tech BD" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -45,7 +51,10 @@
     <meta name="twitter:creator" content="@mdshinhasarder" />
     <meta name="twitter:title" content="MD. Shinha Sarder" />
     <meta name="twitter:description" content="Founder & CEO of IT Tech BD and Biostar TV World. Engineer & Developer." />
-    <meta name="twitter:image" content="https://mdshinhasarder.com/profile.jpg" />
+    <meta name="twitter:image" content="https://mdshinhasarder.com/profile.webp" />
+    <meta name="twitter:image:alt" content="MD. Shinha Sarder profile photo" />
+    <meta itemprop="image" content="https://mdshinhasarder.com/profile.webp" />
+    <meta name="thumbnail" content="https://mdshinhasarder.com/profile.webp" />
 
     <script type="application/ld+json">
     {
@@ -54,6 +63,15 @@
       "name": "MD. Shinha Sarder",
       "alternateName": "MD. Shinha Sarder Official",
       "url": "https://mdshinhasarder.com/",
+      "image": "https://mdshinhasarder.com/profile.webp",
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://mdshinhasarder.com/profile.webp",
+        "contentUrl": "https://mdshinhasarder.com/profile.webp",
+        "width": 1200,
+        "height": 1200,
+        "caption": "MD. Shinha Sarder"
+      },
       "potentialAction": {
         "@type": "SearchAction",
         "target": "https://mdshinhasarder.com/posts?q={search_term_string}",
@@ -64,27 +82,39 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "MD. Shinha Sarder",
+      "@type": "ProfilePage",
       "url": "https://mdshinhasarder.com/",
-      "jobTitle": "Software Developer & Entrepreneur",
-      "birthDate": "2004-11-05",
-      "birthPlace": "Khulna, Bangladesh",
-      "nationality": "Bangladeshi",
-      "alumniOf": "Northern University of Businesses and Technology, Khulna",
-      "sameAs": [
-        "https://www.facebook.com/md.shinha.sarder",
-        "https://x.com/mdshinhasarder",
-        "https://www.youtube.com/@MD-Shinha-Sarder",
-        "https://www.instagram.com/md_shinha_sarder",
-        "https://www.linkedin.com/in/md-shinha-sarder/",
-        "https://github.com/md-shinha-sarder",
-        "https://www.mdshinhasarder.com/"
-      ],
-      "worksFor": [
-        { "@type": "Organization", "name": "IT Tech BD" },
-        { "@type": "Organization", "name": "Biostar TV World" }
-      ]
+      "mainEntity": {
+        "@type": "Person",
+        "name": "MD. Shinha Sarder",
+        "url": "https://mdshinhasarder.com/",
+        "image": {
+          "@type": "ImageObject",
+          "url": "https://mdshinhasarder.com/profile.webp",
+          "contentUrl": "https://mdshinhasarder.com/profile.webp",
+          "width": 1200,
+          "height": 1200,
+          "caption": "MD. Shinha Sarder — Founder & CEO of IT Tech BD"
+        },
+        "jobTitle": "Software Developer & Entrepreneur",
+        "birthDate": "2004-11-05",
+        "birthPlace": "Khulna, Bangladesh",
+        "nationality": "Bangladeshi",
+        "alumniOf": "Northern University of Businesses and Technology, Khulna",
+        "sameAs": [
+          "https://www.facebook.com/md.shinha.sarder",
+          "https://x.com/mdshinhasarder",
+          "https://www.youtube.com/@MD-Shinha-Sarder",
+          "https://www.instagram.com/md_shinha_sarder",
+          "https://www.linkedin.com/in/md-shinha-sarder/",
+          "https://github.com/md-shinha-sarder",
+          "https://www.mdshinhasarder.com/"
+        ],
+        "worksFor": [
+          { "@type": "Organization", "name": "IT Tech BD" },
+          { "@type": "Organization", "name": "Biostar TV World" }
+        ]
+      }
     }
     </script>
   </head>
