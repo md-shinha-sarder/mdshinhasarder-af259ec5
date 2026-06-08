@@ -96,11 +96,15 @@ ${XSL}
     <loc>${BASE}/</loc>
     <image:image><image:loc>${BASE}/profile.webp</image:loc><image:title>MD. Shinha Sarder</image:title><image:caption>Founder &amp; CEO of IT Tech BD and Biostar TV World</image:caption></image:image>
   </url>`;
-      const items = entries.filter((e) => e.image).map((e) => `
-  <url>
-    <loc>${BASE}${postPath(e)}</loc>
-    <image:image><image:loc>${xmlEsc(e.image!)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>
-  </url>`).join("");
+      const items = entries.map((e) => {
+        const imgs: string[] = [];
+        if (e.image) imgs.push(e.image);
+        const re = /<img[^>]+src=["']([^"']+)["']/gi; let m;
+        while ((m = re.exec(e.content || "")) !== null) if (!imgs.includes(m[1])) imgs.push(m[1]);
+        if (!imgs.length) return "";
+        const imgBlocks = imgs.slice(0, 1000).map((u) => `\n    <image:image><image:loc>${xmlEsc(u)}</image:loc><image:title>${xmlEsc(e.title)}</image:title><image:caption>${xmlEsc(e.excerpt)}</image:caption></image:image>`).join("");
+        return `\n  <url>\n    <loc>${BASE}${postPath(e)}</loc>${imgBlocks}\n  </url>`;
+      }).join("");
       const imgs = `<?xml version="1.0" encoding="UTF-8"?>
 ${XSL}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${homeImg}${items}
@@ -143,11 +147,75 @@ ${XSL}
 ${XSL}
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap><loc>${BASE}/sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/post-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${BASE}/news-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${BASE}/image-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${BASE}/video-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/category-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/tag-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${BASE}/page-sitemap.xml</loc><lastmod>${now}</lastmod></sitemap>
 </sitemapindex>`;
       return new Response(idx, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    if (type === "categories" || type === "tags") {
+      const map = new Map<string, string>();
+      for (const e of entries) {
+        const cats = pickAll(e.content || "", "category");
+        // Atom uses <category term="..."/> attributes — extract from raw entry too
+      }
+      // Build from atom category terms
+      const fxml = await fetch(FEED).then((r) => r.text());
+      const rawEntries = pickAll(fxml, "entry");
+      for (const re of rawEntries) {
+        const terms = [...re.matchAll(/<category[^>]+term=["']([^"']+)["']/gi)].map((m) => m[1]);
+        const upd = pick(re, "updated") || pick(re, "published");
+        for (const t of terms) {
+          const slug = t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+          if (!slug) continue;
+          const prev = map.get(slug);
+          if (!prev || upd > prev) map.set(slug, upd);
+        }
+      }
+      const prefix = type === "categories" ? "/category" : "/tag";
+      const items = [...map.entries()].map(([slug, lm]) => `
+  <url>
+    <loc>${BASE}${prefix}/${slug}</loc>
+    <lastmod>${(lm || "").slice(0, 10)}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>`).join("");
+      const out = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${items}
+</urlset>`;
+      return new Response(out, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    if (type === "pages") {
+      const staticPaths = ["/", "/posts", "/#about", "/#skills", "/#projects", "/#services", "/#gallery", "/#music", "/#books", "/#publications", "/#blog"];
+      const items = staticPaths.map((p) => `
+  <url><loc>${BASE}${p}</loc><changefreq>weekly</changefreq><priority>${p === "/" ? "1.0" : "0.7"}</priority></url>`).join("");
+      const out = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${items}
+</urlset>`;
+      return new Response(out, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
+    }
+
+    if (type === "posts") {
+      const items = entries.map((e) => `
+  <url>
+    <loc>${BASE}${postPath(e)}</loc>
+    <lastmod>${(e.updated || e.published || "").slice(0, 10)}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>${e.image ? `\n    <image:image><image:loc>${xmlEsc(e.image)}</image:loc><image:title>${xmlEsc(e.title)}</image:title></image:image>` : ""}
+  </url>`).join("");
+      const out = `<?xml version="1.0" encoding="UTF-8"?>
+${XSL}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${items}
+</urlset>`;
+      return new Response(out, { headers: { ...corsHeaders, "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=600" } });
     }
 
 

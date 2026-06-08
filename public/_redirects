@@ -8,4 +8,8 @@ https://www.mdshinhasarder.com/* https://mdshinhasarder.com/:splat 301!
 /news-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=news 200
 /image-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=images 200
 /video-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=videos 200
+/post-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=posts 200
+/page-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=pages 200
+/category-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=categories 200
+/tag-sitemap.xml https://ihegjzwlvthfqwredssj.supabase.co/functions/v1/feed?type=tags 200
 /*  /index.html  200

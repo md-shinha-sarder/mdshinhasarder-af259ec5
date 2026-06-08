@@ -23,6 +23,14 @@ const check = (post: ReturnType<typeof usePosts>["posts"][number]): Check[] => {
   const tags = (post.tags || []).length > 0;
   const slugOk = /^[a-z0-9-]+$/.test(post.slug);
   const canonicalOk = /^https:\/\/mdshinhasarder\.com\/\d{4}\/\d{2}\/[a-z0-9-]+\.html$/.test(seo.canonical);
+  // Inline image audit
+  const imgs = [...(post.content || "").matchAll(/<img\b([^>]*)>/gi)].map((m) => m[1]);
+  const total = imgs.length;
+  const missingAlt = imgs.filter((a) => !/\balt\s*=\s*["'][^"']+["']/i.test(a)).length;
+  const missingSrc = imgs.filter((a) => !/\bsrc\s*=\s*["'][^"']+["']/i.test(a)).length;
+  // After enhanceContentImages runs at render time width/height are always added,
+  // but we still flag raw HTML missing dims so the source can be improved.
+  const missingDims = imgs.filter((a) => !/\bwidth\s*=/i.test(a) || !/\bheight\s*=/i.test(a)).length;
   return [
     { ok: heads > 0 && heads <= 110, label: `Headline length (${heads}/110)` },
     { ok: titleLen > 0 && titleLen <= 60, warn: titleLen > 60, label: `Meta title length (${titleLen}/60)`, detail: titleLen > 60 ? "Truncated by Google" : "OK" },
@@ -30,6 +38,9 @@ const check = (post: ReturnType<typeof usePosts>["posts"][number]): Check[] => {
     { ok: !!seo.ogTitle && !!seo.ogDescription, label: "OG / Twitter tags generated" },
     { ok: canonicalOk, label: "Canonical URL valid", detail: canonicalOk ? "OK" : seo.canonical },
     { ok: hasImage, label: "Featured image present" },
+    { ok: missingSrc === 0, label: `Image src valid (${total - missingSrc}/${total})`, detail: missingSrc ? `${missingSrc} broken` : "OK" },
+    { ok: missingAlt === 0, warn: missingAlt > 0 && missingAlt < total, label: `Image alt text (${total - missingAlt}/${total})`, detail: missingAlt ? "Auto-filled at render" : "OK" },
+    { ok: missingDims === 0, warn: missingDims > 0, label: `Image dimensions (${total - missingDims}/${total})`, detail: missingDims ? "Auto-added at render" : "OK" },
     { ok: date, label: "Valid publish date" },
     { ok: tags, warn: !tags, label: "Keywords / tags" },
     { ok: slugOk, label: "Clean slug format" },
@@ -138,11 +149,17 @@ const NewsCheckAdmin = () => {
 
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => ping()} disabled={busy === "all"} variant="outline" className="gap-2"><Send size={14} /> Ping sitemaps only</Button>
-        <a href="/sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap.xml</a>
+        <a href="/sitemap-index.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> sitemap-index.xml</a>
+        <a href="/post-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> post-sitemap.xml</a>
+        <a href="/category-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> category-sitemap.xml</a>
+        <a href="/tag-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> tag-sitemap.xml</a>
+        <a href="/page-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> page-sitemap.xml</a>
         <a href="/news-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> news-sitemap.xml</a>
         <a href="/video-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> video-sitemap.xml</a>
         <a href="/image-sitemap.xml" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-md border border-border hover:border-primary"><ExternalLink size={12} /> image-sitemap.xml</a>
       </div>
+
+
 
       {loading && <div className="text-sm text-muted-foreground">Loading posts…</div>}
 

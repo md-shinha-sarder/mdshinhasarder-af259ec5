@@ -27,6 +27,10 @@ const PostDetail = () => {
   const videoIds = ((post?.content || "").match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=)([\w-]{11})/g) || [])
     .map((m) => (m.match(/([\w-]{11})$/) || [])[1]).filter(Boolean) as string[];
 
+  // Collect every image URL in the post (featured + inline) for ImageObject schema
+  const contentImages = [...((post?.content || "").matchAll(/<img[^>]+src=["']([^"']+)["']/gi))].map((m) => m[1]);
+  const allImages = [post?.image, ...contentImages].filter(Boolean) as string[];
+
   // Ping search engines for new indexing once post is loaded
   useEffect(() => {
     if (!post || !url) return;
@@ -81,7 +85,7 @@ const PostDetail = () => {
             mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
             headline: post.title.slice(0, 110),
             description: cleanDesc,
-            image: post.image ? [post.image] : undefined,
+            image: allImages.length ? allImages.map((u) => ({ "@type": "ImageObject", url: u, width: 1200, height: 800, caption: post.title })) : undefined,
             datePublished: post.published,
             dateModified: post.updated || post.published,
             author: { "@type": "Person", name: "MD. Shinha Sarder", url: "https://mdshinhasarder.com/" },
@@ -101,6 +105,23 @@ const PostDetail = () => {
               contentUrl: `https://www.youtube.com/watch?v=${vid}`,
               embedUrl: `https://www.youtube.com/embed/${vid}`,
               publisher: { "@type": "Organization", name: "MD. Shinha Sarder", logo: { "@type": "ImageObject", url: "https://mdshinhasarder.com/favicon.ico" } },
+            })}</script>
+          ))}
+          {allImages.slice(0, 10).map((u) => (
+            <script key={u} type="application/ld+json">{JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ImageObject",
+              contentUrl: u,
+              url: u,
+              width: 1200,
+              height: 800,
+              caption: post.title,
+              name: post.title,
+              description: cleanDesc,
+              author: { "@type": "Person", name: "MD. Shinha Sarder" },
+              creditText: "MD. Shinha Sarder",
+              license: canonical,
+              acquireLicensePage: canonical,
             })}</script>
           ))}
         </Helmet>
