@@ -27,6 +27,10 @@ const PostDetail = () => {
   const videoIds = ((post?.content || "").match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=)([\w-]{11})/g) || [])
     .map((m) => (m.match(/([\w-]{11})$/) || [])[1]).filter(Boolean) as string[];
 
+  // Collect every image URL in the post (featured + inline) for ImageObject schema
+  const contentImages = [...((post?.content || "").matchAll(/<img[^>]+src=["']([^"']+)["']/gi))].map((m) => m[1]);
+  const allImages = [post?.image, ...contentImages].filter(Boolean) as string[];
+
   // Ping search engines for new indexing once post is loaded
   useEffect(() => {
     if (!post || !url) return;
