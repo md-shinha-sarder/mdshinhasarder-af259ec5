@@ -167,7 +167,7 @@ const PostDetail = () => {
                   <div className="grid sm:grid-cols-3 gap-4">
                     {related.map((r) => (
                       <Link key={r.id} to={postPath(r)} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
-                        {r.image && <img src={r.image} alt={r.title} loading="lazy" className="w-full aspect-video object-cover" />}
+                        {r.image && <img src={r.image} alt={buildAlt(r.title, r.tags)} width={640} height={360} loading="lazy" decoding="async" className="w-full aspect-video object-cover" />}
                         <div className="p-3">
                           <h4 className="text-sm font-serif font-semibold line-clamp-2 group-hover:text-primary transition-colors">{r.title}</h4>
                         </div>
