@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { usePosts } from "@/hooks/usePosts";
+import { buildAlt } from "@/lib/imageSeo";
 
 const GallerySection = () => {
   const { posts, loading } = usePosts();
