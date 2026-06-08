@@ -7,6 +7,7 @@ import FooterSection from "@/components/FooterSection";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
 import { buildSeo, SITE } from "@/lib/seo";
+import { buildAlt, enhanceContentImages } from "@/lib/imageSeo";
 import { toast } from "sonner";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); } catch { return ""; } };
@@ -133,11 +134,20 @@ const PostDetail = () => {
                 <Calendar size={14} className="text-primary" /> {fmt(post.published)}
               </div>
               {post.image && (
-                <img src={post.image} alt={post.title} className="w-full rounded-xl mb-8 border border-border" />
+                <img
+                  src={post.image}
+                  alt={buildAlt(post.title, post.tags)}
+                  width={1200}
+                  height={800}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  className="w-full rounded-xl mb-8 border border-border"
+                />
               )}
               <div
                 className="prose prose-invert max-w-none prose-headings:font-serif prose-a:text-primary prose-img:rounded-lg prose-img:mx-auto text-justify [&_p]:text-justify [&_li]:text-justify"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: enhanceContentImages(post.content, post.title) }}
               />
 
               <div className="mt-12 pt-8 border-t border-border">
@@ -157,7 +167,7 @@ const PostDetail = () => {
                   <div className="grid sm:grid-cols-3 gap-4">
                     {related.map((r) => (
                       <Link key={r.id} to={postPath(r)} className="group bg-gradient-card rounded-lg overflow-hidden border border-border hover:border-primary/40 transition-all">
-                        {r.image && <img src={r.image} alt={r.title} loading="lazy" className="w-full aspect-video object-cover" />}
+                        {r.image && <img src={r.image} alt={buildAlt(r.title, r.tags)} width={640} height={360} loading="lazy" decoding="async" className="w-full aspect-video object-cover" />}
                         <div className="p-3">
                           <h4 className="text-sm font-serif font-semibold line-clamp-2 group-hover:text-primary transition-colors">{r.title}</h4>
                         </div>
