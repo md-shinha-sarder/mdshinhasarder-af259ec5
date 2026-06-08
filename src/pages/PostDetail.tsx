@@ -7,6 +7,7 @@ import FooterSection from "@/components/FooterSection";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
 import { buildSeo, SITE } from "@/lib/seo";
+import { buildAlt, enhanceContentImages } from "@/lib/imageSeo";
 import { toast } from "sonner";
 
 const fmt = (d: string) => { try { return new Date(d).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); } catch { return ""; } };
