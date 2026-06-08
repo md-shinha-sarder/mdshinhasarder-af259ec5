@@ -134,11 +134,20 @@ const PostDetail = () => {
                 <Calendar size={14} className="text-primary" /> {fmt(post.published)}
               </div>
               {post.image && (
-                <img src={post.image} alt={post.title} className="w-full rounded-xl mb-8 border border-border" />
+                <img
+                  src={post.image}
+                  alt={buildAlt(post.title, post.tags)}
+                  width={1200}
+                  height={800}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  className="w-full rounded-xl mb-8 border border-border"
+                />
               )}
               <div
                 className="prose prose-invert max-w-none prose-headings:font-serif prose-a:text-primary prose-img:rounded-lg prose-img:mx-auto text-justify [&_p]:text-justify [&_li]:text-justify"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: enhanceContentImages(post.content, post.title) }}
               />
 
               <div className="mt-12 pt-8 border-t border-border">
