@@ -2,6 +2,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { usePosts } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
+import { buildAlt } from "@/lib/imageSeo";
 
 const fmt = (d: string) => {
   try { return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }
