@@ -46,7 +46,7 @@ const GallerySection = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {images.slice(0, 24).map((img, i) => (
               <button key={i} onClick={() => setOpen(img.src)} className="group relative aspect-square overflow-hidden rounded-xl border border-border hover:border-primary/60 transition-colors">
-                <img src={img.src} alt={img.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img src={img.src} alt={buildAlt(img.title, [...img.tags, `photo ${img.idx}`])} width={800} height={800} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 <span className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                   <span className="text-xs text-foreground line-clamp-2">{img.title}</span>
                 </span>
