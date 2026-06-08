@@ -28,10 +28,15 @@ export const useSiteSettings = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_settings").select("*").eq("id", 1).maybeSingle().then(({ data }) => {
-      setSettings(data as SiteSettings);
-      setLoading(false);
-    });
+    supabase
+      .from("site_settings")
+      .select("id, site_title, site_tagline, logo_url, favicon_url, primary_color, background_color, font_heading, font_body, seo_title, seo_description, seo_keywords, social_facebook, social_twitter, social_youtube, social_github, social_website, updated_at")
+      .eq("id", 1)
+      .maybeSingle()
+      .then(({ data }) => {
+        setSettings(data as unknown as SiteSettings);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
