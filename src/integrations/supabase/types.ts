@@ -155,11 +155,30 @@ export type Database = {
         }
         Relationships: []
       }
+      site_contact: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           background_color: string | null
-          contact_email: string | null
-          contact_phone: string | null
           favicon_url: string | null
           font_body: string | null
           font_heading: string | null
@@ -180,8 +199,6 @@ export type Database = {
         }
         Insert: {
           background_color?: string | null
-          contact_email?: string | null
-          contact_phone?: string | null
           favicon_url?: string | null
           font_body?: string | null
           font_heading?: string | null
@@ -202,8 +219,6 @@ export type Database = {
         }
         Update: {
           background_color?: string | null
-          contact_email?: string | null
-          contact_phone?: string | null
           favicon_url?: string | null
           font_body?: string | null
           font_heading?: string | null
