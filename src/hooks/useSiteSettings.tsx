@@ -19,8 +19,6 @@ export interface SiteSettings {
   social_youtube: string | null;
   social_github: string | null;
   social_website: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
 }
 
 export const useSiteSettings = () => {
