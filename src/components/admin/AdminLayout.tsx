@@ -19,21 +19,19 @@ const AdminLayout = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    if (!loading && !user) nav("/auth");
-  }, [user, loading, nav]);
+    if (loading) return;
+    if (!user) { nav("/auth"); return; }
+    if (!isAdmin) {
+      signOut().then(() => {
+        import("sonner").then(({ toast }) => toast.error("Admin access required."));
+        nav("/auth");
+      });
+    }
+  }, [user, isAdmin, loading, nav, signOut]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6 text-center">
-        <div className="space-y-4">
-          <h1 className="text-2xl font-serif font-bold">Not authorized</h1>
-          <p className="text-muted-foreground">Your account is not an admin. Contact an existing admin to grant access.</p>
-          <Button onClick={() => signOut().then(() => nav("/auth"))}>Sign out</Button>
-        </div>
-      </div>
-    );
-  }
+  if (!user || !isAdmin) return null;
+
 
   return (
     <div className="min-h-screen flex bg-background text-foreground">
