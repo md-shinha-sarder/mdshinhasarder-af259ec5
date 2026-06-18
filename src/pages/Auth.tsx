@@ -22,8 +22,19 @@ const Auth = () => {
     e.preventDefault();
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user!.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!roleRow) {
+        await supabase.auth.signOut();
+        throw new Error("This account is not an admin.");
+      }
+      toast.success("Signed in successfully. Opening admin dashboard...");
       nav("/admin");
     } catch (err: any) {
       toast.error(err.message || "Sign in failed");
