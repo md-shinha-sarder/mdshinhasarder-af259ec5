@@ -23,14 +23,16 @@
     <!-- Google News / Subscribe with Google -->
     <script async type="application/javascript" src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
     <script>
-      (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
-        basicSubscriptions.init({
-          type: "NewsArticle",
-          isPartOfType: ["Product"],
-          isPartOfProductId: "CAowrcq9DA:openaccess",
-          clientOptions: { theme: "light", lang: "en" },
+      if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+        (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+          basicSubscriptions.init({
+            type: "NewsArticle",
+            isPartOfType: ["Product"],
+            isPartOfProductId: "CAowrcq9DA:openaccess",
+            clientOptions: { theme: "light", lang: "en" },
+          });
         });
-      });
+      }
     </script>
 
 
