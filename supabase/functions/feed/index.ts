@@ -1,3 +1,5 @@
+import { createClient } from "npm:@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -6,6 +8,18 @@ const corsHeaders = {
 const BASE = "https://mdshinhasarder.com";
 const FEED = "https://shinhaauthor.blogspot.com/feeds/posts/default?max-results=500";
 const XSL = `<?xml-stylesheet type="text/xsl" href="${BASE}/sitemap.xsl"?>`;
+
+type Entry = {
+  title: string;
+  slug: string;
+  published: string;
+  updated: string;
+  excerpt: string;
+  image: string | null;
+  url?: string;
+  content: string;
+  tags: string[];
+};
 
 function pickAll(xml: string, tag: string) {
   const out: string[] = []; const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "gi");
@@ -26,7 +40,31 @@ function postPath(e: { slug: string; published: string; url?: string }) {
   return `/${y}/${m}/${e.slug}.html`;
 }
 
-async function getEntries() {
+async function getDatabaseEntries(): Promise<Entry[]> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceKey) return [];
+  const db = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
+  const { data, error } = await db
+    .from("posts")
+    .select("slug,title,excerpt,content,cover_url,tags,published_at,created_at,updated_at,status")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+  if (error || !data?.length) return [];
+  return data.map((p: any) => ({
+    title: p.title || "Untitled",
+    slug: p.slug || "post",
+    published: p.published_at || p.created_at || new Date().toISOString(),
+    updated: p.updated_at || p.published_at || p.created_at || new Date().toISOString(),
+    excerpt: p.excerpt || strip(p.content || "").slice(0, 240) || p.title || "",
+    image: p.cover_url || null,
+    url: "",
+    content: p.content || "",
+    tags: Array.isArray(p.tags) ? p.tags : [],
+  }));
+}
+
+async function getBloggerEntries(): Promise<Entry[]> {
   const xml = await fetch(FEED).then((r) => r.text());
   return pickAll(xml, "entry").map((e) => {
     const title = strip(pick(e, "title"));
@@ -37,9 +75,15 @@ async function getEntries() {
     const lm = e.match(/<link[^>]*rel=["']alternate["'][^>]*href=["']([^"']+)["']/i);
     const url = lm ? lm[1] : "";
     const img = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url, content };
+    const tags = [...e.matchAll(/<category[^>]+term=["']([^"']+)["']/gi)].map((m) => m[1]).filter((t) => t !== "Latest");
+    return { title, slug: slugOf(url), published, updated, excerpt, image: img ? img[1] : null, url, content, tags };
   });
 
+}
+
+async function getEntries(): Promise<Entry[]> {
+  const dbEntries = await getDatabaseEntries();
+  return dbEntries.length ? dbEntries : await getBloggerEntries();
 }
 
 Deno.serve(async (req) => {
