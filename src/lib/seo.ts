@@ -51,8 +51,8 @@ export const autoTitle = (title: string): string => {
 
 export const buildSeo = (post: BlogPost) => {
   const canonical = `${SITE.url}${postPath(post)}`;
-  const metaTitle = autoTitle(post.title);
-  const metaDescription = autoDescription(post);
+  const metaTitle = post.seo_title?.trim() || autoTitle(post.title);
+  const metaDescription = post.seo_description?.trim() || autoDescription(post);
   return {
     canonical,
     metaTitle,

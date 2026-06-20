@@ -12,6 +12,8 @@ export interface BlogPost {
   published: string;
   updated: string;
   tags: string[];
+  seo_title?: string | null;
+  seo_description?: string | null;
 }
 
 const cache: Record<string, BlogPost[]> = {};
@@ -22,9 +24,34 @@ async function load(type: "posts" | "pages", force = false): Promise<BlogPost[]>
   if (!force && cache[type]) return cache[type];
   if (!force && inflight[type]) return inflight[type];
   inflight[type] = (async () => {
-    const { data, error } = await supabase.functions.invoke(`fetch-posts?type=${type}${force ? `&t=${Date.now()}` : ""}`);
-    if (error) throw error;
-    cache[type] = (data?.posts ?? data?.items ?? []) as BlogPost[];
+    const table = type === "posts" ? "posts" : "pages";
+    const select = type === "posts"
+      ? "id, slug, title, excerpt, content, cover_url, tags, seo_title, seo_description, status, published_at, created_at, updated_at"
+      : "id, slug, title, content, seo_title, seo_description, status, created_at, updated_at";
+    const { data: dbItems, error: dbError } = await (supabase.from as any)(table)
+      .select(select)
+      .eq("status", "published")
+      .order(type === "posts" ? "published_at" : "created_at", { ascending: false });
+    if (!dbError && dbItems && dbItems.length > 0) {
+      cache[type] = dbItems.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        slug: item.slug,
+        url: "",
+        image: item.cover_url ?? null,
+        excerpt: item.excerpt || item.seo_description || item.title,
+        content: item.content || "",
+        published: item.published_at || item.created_at,
+        updated: item.updated_at || item.published_at || item.created_at,
+        tags: item.tags || [],
+        seo_title: item.seo_title || null,
+        seo_description: item.seo_description || null,
+      })) as BlogPost[];
+    } else {
+      const { data, error } = await supabase.functions.invoke(`fetch-posts?type=${type}${force ? `&t=${Date.now()}` : ""}`);
+      if (error) throw error;
+      cache[type] = (data?.posts ?? data?.items ?? []) as BlogPost[];
+    }
     (subs[type] ||= new Set()).forEach((fn) => fn(cache[type]));
     return cache[type];
   })();

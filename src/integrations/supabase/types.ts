@@ -239,6 +239,69 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings_public: {
+        Row: {
+          background_color: string | null
+          favicon_url: string | null
+          font_body: string | null
+          font_heading: string | null
+          id: number
+          logo_url: string | null
+          primary_color: string | null
+          seo_description: string | null
+          seo_keywords: string | null
+          seo_title: string | null
+          site_tagline: string | null
+          site_title: string | null
+          social_facebook: string | null
+          social_github: string | null
+          social_twitter: string | null
+          social_website: string | null
+          social_youtube: string | null
+          updated_at: string
+        }
+        Insert: {
+          background_color?: string | null
+          favicon_url?: string | null
+          font_body?: string | null
+          font_heading?: string | null
+          id?: number
+          logo_url?: string | null
+          primary_color?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
+          site_tagline?: string | null
+          site_title?: string | null
+          social_facebook?: string | null
+          social_github?: string | null
+          social_twitter?: string | null
+          social_website?: string | null
+          social_youtube?: string | null
+          updated_at?: string
+        }
+        Update: {
+          background_color?: string | null
+          favicon_url?: string | null
+          font_body?: string | null
+          font_heading?: string | null
+          id?: number
+          logo_url?: string | null
+          primary_color?: string | null
+          seo_description?: string | null
+          seo_keywords?: string | null
+          seo_title?: string | null
+          site_tagline?: string | null
+          site_title?: string | null
+          social_facebook?: string | null
+          social_github?: string | null
+          social_twitter?: string | null
+          social_website?: string | null
+          social_youtube?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -262,69 +325,7 @@ export type Database = {
       }
     }
     Views: {
-      site_settings_public: {
-        Row: {
-          background_color: string | null
-          favicon_url: string | null
-          font_body: string | null
-          font_heading: string | null
-          id: number | null
-          logo_url: string | null
-          primary_color: string | null
-          seo_description: string | null
-          seo_keywords: string | null
-          seo_title: string | null
-          site_tagline: string | null
-          site_title: string | null
-          social_facebook: string | null
-          social_github: string | null
-          social_twitter: string | null
-          social_website: string | null
-          social_youtube: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          background_color?: string | null
-          favicon_url?: string | null
-          font_body?: string | null
-          font_heading?: string | null
-          id?: number | null
-          logo_url?: string | null
-          primary_color?: string | null
-          seo_description?: string | null
-          seo_keywords?: string | null
-          seo_title?: string | null
-          site_tagline?: string | null
-          site_title?: string | null
-          social_facebook?: string | null
-          social_github?: string | null
-          social_twitter?: string | null
-          social_website?: string | null
-          social_youtube?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          background_color?: string | null
-          favicon_url?: string | null
-          font_body?: string | null
-          font_heading?: string | null
-          id?: number | null
-          logo_url?: string | null
-          primary_color?: string | null
-          seo_description?: string | null
-          seo_keywords?: string | null
-          seo_title?: string | null
-          site_tagline?: string | null
-          site_title?: string | null
-          social_facebook?: string | null
-          social_github?: string | null
-          social_twitter?: string | null
-          social_website?: string | null
-          social_youtube?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       has_role: {

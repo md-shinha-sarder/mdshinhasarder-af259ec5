@@ -19,31 +19,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+    let mounted = true;
+
+    const checkAdmin = async (userId: string) => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    };
+
+    const applySession = async (s: Session | null) => {
+      if (!mounted) return;
+      setLoading(true);
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) {
-        setTimeout(async () => {
-          const { data } = await supabase.from("user_roles").select("role").eq("user_id", s.user.id).eq("role", "admin").maybeSingle();
-          setIsAdmin(!!data);
-        }, 0);
-      } else {
+      if (!s?.user) {
         setIsAdmin(false);
+        setLoading(false);
+        return;
       }
+      const admin = await checkAdmin(s.user.id).catch(() => false);
+      if (!mounted) return;
+      setIsAdmin(admin);
+      setLoading(false);
+    };
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      void applySession(s);
     });
     supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
       if (data.session?.user) {
-        const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.session.user.id).eq("role", "admin").maybeSingle();
-        setIsAdmin(!!r);
+        const { data: verified, error } = await supabase.auth.getUser();
+        if (error || !verified.user) {
+          await supabase.auth.signOut();
+          await applySession(null);
+          return;
+        }
+        await applySession({ ...data.session, user: verified.user });
+      } else {
+        await applySession(null);
       }
-      setLoading(false);
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, []);
 
-  return <Ctx.Provider value={{ user, session, isAdmin, loading, signOut: async () => { await supabase.auth.signOut(); } }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ user, session, isAdmin, loading, signOut: async () => { await supabase.auth.signOut(); setSession(null); setUser(null); setIsAdmin(false); } }}>{children}</Ctx.Provider>;
 };
 
 export const useAuth = () => useContext(Ctx);
