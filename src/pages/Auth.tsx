@@ -8,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const ADMIN_EMAIL = "shinhasarder2343@gmail.com";
+const ADMIN_ALIASES: Record<string, string> = {
+  shinhasarder2343: "shinhasarder2343@gmail.com",
+  mdshinhasarder466: "mdshinhasarder466@gmail.com",
+};
 
 const Auth = () => {
   const nav = useNavigate();
@@ -16,26 +20,31 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { if (!loading && user) nav("/admin"); }, [user, loading, nav]);
+  useEffect(() => { if (!loading && user) nav("/admin", { replace: true }); }, [user, loading, nav]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const trimmed = email.trim().toLowerCase();
+      const loginEmail = ADMIN_ALIASES[trimmed] || trimmed;
+      const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) throw error;
-      const { data: roleRow } = await supabase
+      const { data: verified, error: userError } = await supabase.auth.getUser();
+      if (userError || !verified.user) throw userError || new Error("Could not verify this session.");
+      const { data: roleRow, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", data.user!.id)
+        .eq("user_id", verified.user.id)
         .eq("role", "admin")
         .maybeSingle();
+      if (roleError) throw roleError;
       if (!roleRow) {
         await supabase.auth.signOut();
         throw new Error("This account is not an admin.");
       }
       toast.success("Signed in successfully. Opening admin dashboard...");
-      nav("/admin");
+      nav("/admin", { replace: true });
     } catch (err: any) {
       toast.error(err.message || "Sign in failed");
     } finally {
@@ -50,7 +59,7 @@ const Auth = () => {
         <p className="text-sm text-muted-foreground">Sign in with your admin credentials.</p>
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input type="text" inputMode="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="space-y-2">
           <Label>Password</Label>
