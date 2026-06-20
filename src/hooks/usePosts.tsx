@@ -12,6 +12,8 @@ export interface BlogPost {
   published: string;
   updated: string;
   tags: string[];
+  seo_title?: string | null;
+  seo_description?: string | null;
 }
 
 const cache: Record<string, BlogPost[]> = {};
@@ -43,6 +45,8 @@ async function load(type: "posts" | "pages", force = false): Promise<BlogPost[]>
         published: item.published_at || item.created_at,
         updated: item.updated_at || item.published_at || item.created_at,
         tags: item.tags || [],
+        seo_title: item.seo_title || null,
+        seo_description: item.seo_description || null,
       })) as BlogPost[];
     } else {
       const { data, error } = await supabase.functions.invoke(`fetch-posts?type=${type}${force ? `&t=${Date.now()}` : ""}`);
