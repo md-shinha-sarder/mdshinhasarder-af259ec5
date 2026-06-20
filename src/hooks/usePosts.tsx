@@ -28,8 +28,7 @@ async function load(type: "posts" | "pages", force = false): Promise<BlogPost[]>
     const select = type === "posts"
       ? "id, slug, title, excerpt, content, cover_url, tags, seo_title, seo_description, status, published_at, created_at, updated_at"
       : "id, slug, title, content, seo_title, seo_description, status, created_at, updated_at";
-    const { data: dbItems, error: dbError } = await supabase
-      .from(table)
+    const { data: dbItems, error: dbError } = await (supabase.from as any)(table)
       .select(select)
       .eq("status", "published")
       .order(type === "posts" ? "published_at" : "created_at", { ascending: false });
