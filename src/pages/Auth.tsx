@@ -28,7 +28,7 @@ const Auth = () => {
     try {
       const trimmed = email.trim().toLowerCase();
       const loginEmail = ADMIN_ALIASES[trimmed] || trimmed;
-      const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) throw error;
       const { data: verified, error: userError } = await supabase.auth.getUser();
       if (userError || !verified.user) throw userError || new Error("Could not verify this session.");
