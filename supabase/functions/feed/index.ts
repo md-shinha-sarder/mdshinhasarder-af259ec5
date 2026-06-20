@@ -205,20 +205,11 @@ ${XSL}
     if (type === "categories" || type === "tags") {
       const map = new Map<string, string>();
       for (const e of entries) {
-        const cats = pickAll(e.content || "", "category");
-        // Atom uses <category term="..."/> attributes — extract from raw entry too
-      }
-      // Build from atom category terms
-      const fxml = await fetch(FEED).then((r) => r.text());
-      const rawEntries = pickAll(fxml, "entry");
-      for (const re of rawEntries) {
-        const terms = [...re.matchAll(/<category[^>]+term=["']([^"']+)["']/gi)].map((m) => m[1]);
-        const upd = pick(re, "updated") || pick(re, "published");
-        for (const t of terms) {
+        for (const t of e.tags || []) {
           const slug = t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
           if (!slug) continue;
           const prev = map.get(slug);
-          if (!prev || upd > prev) map.set(slug, upd);
+          if (!prev || e.updated > prev) map.set(slug, e.updated || e.published);
         }
       }
       const prefix = type === "categories" ? "/category" : "/tag";
