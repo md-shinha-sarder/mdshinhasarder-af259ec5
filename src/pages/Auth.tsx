@@ -15,12 +15,19 @@ const ADMIN_ALIASES: Record<string, string> = {
 
 const Auth = () => {
   const nav = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading, signOut } = useAuth();
   const [email, setEmail] = useState(ADMIN_EMAIL);
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { if (!loading && user) nav("/admin", { replace: true }); }, [user, loading, nav]);
+  useEffect(() => {
+    if (loading || !user) return;
+    if (isAdmin) {
+      nav("/admin", { replace: true });
+      return;
+    }
+    signOut().then(() => toast.error("Admin access required."));
+  }, [user, isAdmin, loading, nav, signOut]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
