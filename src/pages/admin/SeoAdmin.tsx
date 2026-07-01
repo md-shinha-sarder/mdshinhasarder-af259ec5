@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import { toSiteMediaUrl } from "@/lib/mediaUrl";
 
 const SeoAdmin = () => {
   const [s, setS] = useState<any>(null);
@@ -26,6 +28,8 @@ const SeoAdmin = () => {
 
   const save = async () => {
     const { error } = await supabase.from("site_settings").update({
+      site_title: s.site_title, site_tagline: s.site_tagline,
+      logo_url: s.logo_url, favicon_url: s.favicon_url,
       seo_title: s.seo_title, seo_description: s.seo_description, seo_keywords: s.seo_keywords,
       social_facebook: s.social_facebook, social_twitter: s.social_twitter, social_youtube: s.social_youtube,
       social_github: s.social_github, social_website: s.social_website,
@@ -46,8 +50,14 @@ const SeoAdmin = () => {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div><h1 className="text-3xl font-serif font-bold">SEO & Social</h1><p className="text-muted-foreground">Default meta tags and social links.</p></div>
-      <div className="bg-gradient-card border border-border rounded-xl p-6 space-y-4">
+      <div><h1 className="text-2xl sm:text-3xl font-serif font-bold">SEO & Social</h1><p className="text-muted-foreground">Site branding, default meta tags, and social links.</p></div>
+      <div className="bg-gradient-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div><Label>Site Title</Label><Input value={s.site_title || ""} onChange={(e) => setS({ ...s, site_title: e.target.value })} /></div>
+          <div><Label>Tagline</Label><Input value={s.site_tagline || ""} onChange={(e) => setS({ ...s, site_tagline: e.target.value })} /></div>
+        </div>
+        <MediaPicker label="Site Logo" value={toSiteMediaUrl(s.logo_url || "")} onChange={(url) => setS({ ...s, logo_url: url })} />
+        <MediaPicker label="Favicon" value={toSiteMediaUrl(s.favicon_url || "")} onChange={(url) => setS({ ...s, favicon_url: url })} />
         <div><Label>SEO Title</Label><Input value={s.seo_title || ""} onChange={(e) => setS({ ...s, seo_title: e.target.value })} /></div>
         <div><Label>SEO Description</Label><Textarea rows={3} value={s.seo_description || ""} onChange={(e) => setS({ ...s, seo_description: e.target.value })} /></div>
         <div><Label>Keywords</Label><Input value={s.seo_keywords || ""} onChange={(e) => setS({ ...s, seo_keywords: e.target.value })} /></div>

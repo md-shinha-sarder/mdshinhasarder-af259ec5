@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import { toSiteMediaUrl } from "@/lib/mediaUrl";
 
 interface Post {
   id: string; slug: string; title: string; excerpt: string | null; content: string;
@@ -33,6 +35,7 @@ const PostsAdmin = () => {
 
   const save = async () => {
     if (!editing) return;
+    if (!editing.cover_url) return toast.error("Please add a cover image.");
     const tags = tagsStr.split(",").map((t) => t.trim()).filter(Boolean);
     const payload = {
       slug: editing.slug, title: editing.title, excerpt: editing.excerpt, content: editing.content,
@@ -69,7 +72,7 @@ const PostsAdmin = () => {
                 </div>
                 <div><Label>Excerpt</Label><Textarea rows={2} value={editing.excerpt || ""} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} /></div>
                 <div><Label>Content</Label><Textarea rows={8} value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} /></div>
-                <div><Label>Cover Image URL</Label><Input value={editing.cover_url || ""} onChange={(e) => setEditing({ ...editing, cover_url: e.target.value })} /></div>
+                <MediaPicker label="Cover Image *" value={toSiteMediaUrl(editing.cover_url || "")} onChange={(url) => setEditing({ ...editing, cover_url: url })} />
                 <div><Label>Tags (comma separated)</Label><Input value={tagsStr} onChange={(e) => setTagsStr(e.target.value)} /></div>
                 <div><Label>SEO Title</Label><Input value={editing.seo_title || ""} onChange={(e) => setEditing({ ...editing, seo_title: e.target.value })} /></div>
                 <div><Label>SEO Description</Label><Textarea rows={2} value={editing.seo_description || ""} onChange={(e) => setEditing({ ...editing, seo_description: e.target.value })} /></div>
