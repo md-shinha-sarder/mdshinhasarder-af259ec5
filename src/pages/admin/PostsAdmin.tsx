@@ -35,6 +35,7 @@ const PostsAdmin = () => {
 
   const save = async () => {
     if (!editing) return;
+    if (!editing.cover_url) return toast.error("Please add a cover image.");
     const tags = tagsStr.split(",").map((t) => t.trim()).filter(Boolean);
     const payload = {
       slug: editing.slug, title: editing.title, excerpt: editing.excerpt, content: editing.content,
