@@ -28,6 +28,8 @@ const SeoAdmin = () => {
 
   const save = async () => {
     const { error } = await supabase.from("site_settings").update({
+      site_title: s.site_title, site_tagline: s.site_tagline,
+      logo_url: s.logo_url, favicon_url: s.favicon_url,
       seo_title: s.seo_title, seo_description: s.seo_description, seo_keywords: s.seo_keywords,
       social_facebook: s.social_facebook, social_twitter: s.social_twitter, social_youtube: s.social_youtube,
       social_github: s.social_github, social_website: s.social_website,
