@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-const ADMIN_EMAIL = "shinhasarder2343@gmail.com";
 const ADMIN_ALIASES: Record<string, string> = {
   shinhasarder2343: "shinhasarder2343@gmail.com",
   mdshinhasarder466: "mdshinhasarder466@gmail.com",
@@ -16,7 +15,7 @@ const ADMIN_ALIASES: Record<string, string> = {
 const Auth = () => {
   const nav = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
-  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
