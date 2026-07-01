@@ -65,11 +65,11 @@ const Auth = () => {
         <p className="text-sm text-muted-foreground">Sign in with your admin credentials.</p>
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input type="text" inputMode="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input type="text" inputMode="email" autoComplete="off" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin email or username" />
         </div>
         <div className="space-y-2">
           <Label>Password</Label>
-          <Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Input type="password" autoComplete="new-password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <Button type="submit" disabled={busy} className="w-full bg-gradient-gold text-primary-foreground">
           {busy ? "Please wait..." : "Sign In"}
