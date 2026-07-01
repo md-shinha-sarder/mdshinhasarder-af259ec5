@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import { toSiteMediaUrl } from "@/lib/mediaUrl";
 
 const SeoAdmin = () => {
   const [s, setS] = useState<any>(null);
