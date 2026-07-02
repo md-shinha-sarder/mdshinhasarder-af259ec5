@@ -15,7 +15,7 @@ import { usePages } from "@/hooks/usePosts";
 import { postPath } from "@/lib/postUrl";
 import { Link } from "react-router-dom";
 
-import { toSiteMediaUrl } from "@/lib/mediaUrl";
+
 
 interface Page {
   id: string; slug: string; title: string; content: string;
