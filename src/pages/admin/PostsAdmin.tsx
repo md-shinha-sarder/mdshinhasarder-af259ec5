@@ -24,10 +24,12 @@ interface Post {
 const blank: Post = { id: "", slug: "", title: "", excerpt: "", content: "", cover_url: "", tags: [], seo_title: "", seo_description: "", status: "draft" };
 
 const PostsAdmin = () => {
+  const { posts: bloggerPosts } = usePosts();
   const [items, setItems] = useState<Post[]>([]);
   const [editing, setEditing] = useState<Post | null>(null);
   const [open, setOpen] = useState(false);
   const [tagsStr, setTagsStr] = useState("");
+
 
   const load = async () => {
     const { data } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
