@@ -6,10 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Rss, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { toSiteMediaUrl } from "@/lib/mediaUrl";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePosts } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
+import { Link } from "react-router-dom";
+
 
 interface Post {
   id: string; slug: string; title: string; excerpt: string | null; content: string;
