@@ -6,10 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Rss, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { MediaPicker, MediaMultiPicker } from "@/components/admin/MediaPicker";
 import { toSiteMediaUrl } from "@/lib/mediaUrl";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePages } from "@/hooks/usePosts";
+import { postPath } from "@/lib/postUrl";
+import { Link } from "react-router-dom";
+
+
 
 interface Page {
   id: string; slug: string; title: string; content: string;
@@ -20,9 +26,11 @@ interface Page {
 const blank: Page = { id: "", slug: "", title: "", content: "", cover_url: "", images: [], seo_title: "", seo_description: "", status: "draft" };
 
 const PagesAdmin = () => {
+  const { pages: bloggerPages } = usePages();
   const [items, setItems] = useState<Page[]>([]);
   const [editing, setEditing] = useState<Page | null>(null);
   const [open, setOpen] = useState(false);
+
 
   const load = async () => {
     const { data } = await supabase.from("pages").select("*").order("created_at", { ascending: false });
@@ -82,24 +90,47 @@ const PagesAdmin = () => {
           </DialogContent>
         </Dialog>
       </div>
-      <div className="bg-gradient-card border border-border rounded-xl divide-y divide-border">
-        {items.length === 0 && <div className="p-8 text-center text-muted-foreground">No pages yet.</div>}
-        {items.map((p) => (
-          <div key={p.id} className="flex items-center justify-between p-4 gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              {p.cover_url && <img src={p.cover_url} alt="" className="w-12 h-12 rounded object-cover shrink-0" />}
-              <div className="min-w-0">
-                <div className="font-medium truncate">{p.title} <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{p.status}</span></div>
-                <div className="text-xs text-muted-foreground truncate">/{p.slug} · {p.images?.length || 0} photos</div>
+      <Tabs defaultValue="db">
+        <TabsList>
+          <TabsTrigger value="db">Managed ({items.length})</TabsTrigger>
+          <TabsTrigger value="blogger"><Rss size={14} className="mr-1" /> Blogger ({bloggerPages.length})</TabsTrigger>
+        </TabsList>
+        <TabsContent value="db">
+          <div className="bg-gradient-card border border-border rounded-xl divide-y divide-border">
+            {items.length === 0 && <div className="p-8 text-center text-muted-foreground">No pages yet.</div>}
+            {items.map((p) => (
+              <div key={p.id} className="flex items-center justify-between p-4 gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {p.cover_url && <img src={p.cover_url} alt="" className="w-12 h-12 rounded object-cover shrink-0" />}
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{p.title} <span className="text-xs ml-2 px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{p.status}</span></div>
+                    <div className="text-xs text-muted-foreground truncate">/{p.slug} · {p.images?.length || 0} photos</div>
+                  </div>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil size={14} /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => remove(p.id)}><Trash2 size={14} /></Button>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-2 shrink-0">
-              <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Pencil size={14} /></Button>
-              <Button size="icon" variant="ghost" onClick={() => remove(p.id)}><Trash2 size={14} /></Button>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </TabsContent>
+        <TabsContent value="blogger">
+          <div className="bg-gradient-card border border-border rounded-xl divide-y divide-border max-h-[70vh] overflow-y-auto">
+            {bloggerPages.length === 0 && <div className="p-8 text-center text-muted-foreground">No Blogger pages.</div>}
+            {bloggerPages.map((p) => (
+              <div key={p.id} className="flex items-center justify-between p-4 gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {p.image && <img src={p.image} alt="" className="w-12 h-12 rounded object-cover shrink-0" />}
+                  <div className="min-w-0 font-medium truncate">{p.title}</div>
+                </div>
+                <Link to={postPath(p)} className="text-primary shrink-0"><ExternalLink size={16} /></Link>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+
     </div>
   );
 };
