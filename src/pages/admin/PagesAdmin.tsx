@@ -26,9 +26,11 @@ interface Page {
 const blank: Page = { id: "", slug: "", title: "", content: "", cover_url: "", images: [], seo_title: "", seo_description: "", status: "draft" };
 
 const PagesAdmin = () => {
+  const { pages: bloggerPages } = usePages();
   const [items, setItems] = useState<Page[]>([]);
   const [editing, setEditing] = useState<Page | null>(null);
   const [open, setOpen] = useState(false);
+
 
   const load = async () => {
     const { data } = await supabase.from("pages").select("*").order("created_at", { ascending: false });
